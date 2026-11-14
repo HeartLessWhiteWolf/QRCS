@@ -1,0 +1,18 @@
+* text=auto
+*.js text eol=lf
+*.mjs text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.txt text eol=lf
+*.sha256 text eol=lf
+*.svg text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+# Markdown hard line breaks and untouched upstream license endings are intentional.
+*.md whitespace=-blank-at-eol
+extension/vendor/* whitespace=-blank-at-eof
+*.png binary
+*.wasm binary
+*.zip binary

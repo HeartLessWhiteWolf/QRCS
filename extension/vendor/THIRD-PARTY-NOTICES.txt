@@ -1,0 +1,19 @@
+QRCS third-party components (bundled locally, no CDN required)
+
+jsQR 1.4.0
+https://github.com/cozmo/jsQR
+Copyright the jsQR contributors.
+License: Apache-2.0, included in jsQR-LICENSE.txt.
+
+zxing-wasm 3.1.6 (reader IIFE and WebAssembly)
+https://github.com/Sec-ant/zxing-wasm
+Copyright (c) 2023 Ze-Zheng Wu.
+JavaScript wrapper license: MIT, included in zxing-wasm-LICENSE.txt.
+
+The WebAssembly reader is built from ZXing-C++:
+https://github.com/zxing-cpp/zxing-cpp
+Copyright the ZXing-C++ and original ZXing contributors.
+License: Apache-2.0, included in zxing-cpp-LICENSE.txt.
+
+The distributed upstream decoder assets are unmodified. QRCS supplies local
+WASM bytes during initialization and merges validated QR Code results.

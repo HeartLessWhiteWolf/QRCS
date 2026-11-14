@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-11-14T16:37:53.287Z",
+  "version": "1.0.2",
+  "images": [
+    {
+      "file": "assets/logo-128.png",
+      "bytes": 490,
+      "sha256": "7f67ca05cb7729a766cb0686963ccfa9e96da03c133d86565c590c277a6d7001"
+    },
+    {
+      "file": "assets/logo-300.png",
+      "bytes": 1068,
+      "sha256": "98b46aa2f97a45fa75f8010cf814a3160d4ffd2f2a83866ededc69e488aed51c"
+    },
+    {
+      "file": "assets/logo.svg",
+      "bytes": 9997,
+      "sha256": "f0f36065711ab297d179b9753701043f13a666cf185c29ccd37ebfc91e7d5668"
+    },
+    {
+      "file": "assets/promo-large-1400x560.png",
+      "bytes": 60467,
+      "sha256": "e42ec21bee8e31275fe385ff6df7ff0de3de5011b5e105e2b75c5d2bd71e23dc"
+    },
+    {
+      "file": "assets/promo-small-440x280.png",
+      "bytes": 15124,
+      "sha256": "3346f64d8d5e1e18af60d6ecf86e4f61ca14c3774715b8328a42a50f04295369"
+    },
+    {
+      "file": "assets/screenshot-01-result-1280x800.png",
+      "bytes": 84192,
+      "sha256": "baa48b0ecce9867e7979bff993f39a567165e33c13ae3593bfc2395b0093e372"
+    },
+    {
+      "file": "assets/screenshot-02-selection-1280x800.png",
+      "bytes": 72754,
+      "sha256": "bc632e1909cbab705162e1faeda420a342e0a033f6911bf0234d48dcd5fe08f3"
+    },
+    {
+      "file": "assets/screenshot-03-text-1280x800.png",
+      "bytes": 85292,
+      "sha256": "57d6a4fa175304d14835bfde343baeaf09bab925ba5d69dbdf8208d594b0b3bf"
+    },
+    {
+      "file": "assets/screenshot-04-wifi-1280x800.png",
+      "bytes": 84411,
+      "sha256": "e1e82f48738b58e4e3a8b4502a1c405704bc687fbd104854eed487e2aeb5faea"
+    }
+  ],
+  "checks": [
+    "4 张商店截图来自实际生产浮层/框选；示例链接、中文换行、Wi-Fi 原文与预期一致。",
+    "隐私政策 HTML 在桌面与 390px 手机视口无水平溢出；无外部脚本、远程字体。"
+  ],
+  "browserVersion": "145.0.7632.6",
+  "pending": [
+    "隐私政策真实 HTTPS 网址"
+  ]
+}

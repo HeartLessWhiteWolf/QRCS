@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-11-14T16:37:55.593Z",
+  "version": "1.0.2",
+  "checks": [
+    "商店描述 921 字符、搜索词 6 个，名称与短描述和 manifest 一致",
+    "发布者与公开支持邮箱已填写，文案元数据一致",
+    "logo-128.png: 128×128",
+    "logo-300.png: 300×300",
+    "promo-small-440x280.png: 440×280",
+    "promo-large-1400x560.png: 1400×560",
+    "screenshot-01-result-1280x800.png: 1280×800",
+    "screenshot-02-selection-1280x800.png: 1280×800",
+    "screenshot-03-text-1280x800.png: 1280×800",
+    "screenshot-04-wifi-1280x800.png: 1280×800",
+    "4 张真实截图在商店数量上限内，全部图像与生成证据 SHA-256 一致",
+    "4 个静态页面没有未替换占位符、执行脚本、远程字体或外链图像，隐私政策署名正确",
+    "独立扩展 ZIP 版本、入口与 SHA-256 正确，不含测试入口或商店个人资料"
+  ],
+  "pending": [
+    "将 privacy-site/privacy.html 部署到真实公开 HTTPS 地址，并填写 privacyPolicyURL。",
+    "在正式 Microsoft Edge 中完成提交版本的原生菜单/工具栏最终验收，并核对 Partner Center 账号、市场和实际表单。"
+  ],
+  "readyForSubmission": false
+}

@@ -1,0 +1,14 @@
+node_modules/
+tmp/*
+!tmp/.gitkeep
+local-only/
+test-results/
+playwright-report/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+# Historical screenshot containing a real user-provided QR payload.
+docs/screenshots/styled-result.png
