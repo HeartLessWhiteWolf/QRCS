@@ -38,7 +38,7 @@ try {
   const manifest = JSON.parse(await fs.readFile(path.join(testExtension, 'manifest.json'), 'utf8'));
   manifest.background.service_worker = 'test-background.js';
   await fs.writeFile(path.join(testExtension, 'manifest.json'), JSON.stringify(manifest));
-  await fs.writeFile(path.join(testExtension, 'test-background.js'), "import { beginImage, beginSelection, presentJob } from './background.js'; globalThis.qrcsTest = { beginImage, beginSelection, presentJob };\n");
+  await fs.writeFile(path.join(testExtension, 'test-background.js'), "import { beginImage, beginSelection, presentJob, handleContextMenu } from './background.js'; globalThis.qrcsTest = { beginImage, beginSelection, presentJob, handleContextMenu };\n");
   context = await chromium.launchPersistentContext(profile, { channel: 'chromium', headless: true, viewport: { width: 1400, height: 1000 },
     args: [`--disable-extensions-except=${testExtension}`, `--load-extension=${testExtension}`] });
   context.on('page', page => page.on('pageerror', error => errors.push(error.message)));
@@ -51,7 +51,7 @@ try {
   const windows = () => worker.evaluate(async () => (await chrome.windows.getAll()).map(w => w.id));
   const initialWindows = await windows();
   const closePanel = async () => { await panel.locator('#cancel').click(); await expect(panel).toHaveCount(0); };
-  const imageView = async srcUrl => { await worker.evaluate(({ srcUrl, tab }) => qrcsTest.beginImage({ srcUrl }, tab), { srcUrl, tab }); await expect(panel).toBeVisible(); };
+  const imageView = async srcUrl => { await worker.evaluate(({ srcUrl, tab }) => qrcsTest.handleContextMenu({ menuItemId: 'qrcs-image', mediaType: 'image', srcUrl }, tab), { srcUrl, tab }); await expect(panel).toBeVisible(); };
   const makeJob = async (extra, screenshot) => {
     const job = { id: crypto.randomUUID(), created: Date.now(), tabId: tab.id, windowId: tab.windowId, screenshot, ...extra };
     await worker.evaluate(job => chrome.storage.session.set({ ['qrcs-job-' + job.id]: job }), job); return job;
@@ -129,6 +129,48 @@ try {
     const job = await selectOnPage(screenshot); await source.keyboard.press('Escape'); await expect(source.locator('qrcs-selection')).toHaveCount(0);
     await expect.poll(() => worker.evaluate(async id => Object.keys(await chrome.storage.session.get('qrcs-job-' + id)).length, job.id)).toBe(0);
   });
+  const expectJobGone = async id => {
+    await expect.poll(() => worker.evaluate(async id => Object.keys(await chrome.storage.session.get('qrcs-job-' + id)).length, id)).toBe(0);
+  };
+  for (const dragging of [false, true]) await check('网页右键取消' + (dragging ? '进行中的拖动' : '未开始的框选') + '，清除任务且不识别', async () => {
+    const job = await selectOnPage(screenshot);
+    await source.mouse.move(250, 300);
+    if (dragging) { await source.mouse.down(); await source.mouse.move(550, 600); }
+    await source.mouse.click(550, 600, { button: 'right' });
+    await expect(source.locator('qrcs-selection')).toHaveCount(0);
+    if (dragging) await source.mouse.up();
+    await expectJobGone(job.id); await expect(panel).toHaveCount(0);
+  });
+  for (const dragging of [false, true]) await check('工具栏右键取消' + (dragging ? '进行中的拖动' : '未开始的框选') + '，关闭并清除任务', async () => {
+    const page = await standalone({ mode: 'select' }, screenshot);
+    const id = new URL(page.url()).searchParams.get('job');
+    await expect(page.locator('#select')).toBeVisible();
+    const bounds = await page.locator('#stage').boundingBox();
+    await page.mouse.move(bounds.x + 20, bounds.y + 20);
+    if (dragging) { await page.mouse.down(); await page.mouse.move(bounds.x + 150, bounds.y + 80); }
+    const closed = page.waitForEvent('close');
+    await page.mouse.click(bounds.x + 150, bounds.y + 80, { button: 'right' }).catch(error => { if (!page.isClosed()) throw error; });
+    await closed; await expectJobGone(id);
+  });
+  await check('工具栏结果右键仍可使用，不误取消识别结果', async () => {
+    const page = await standalone({ mode: 'image', imageUrl: 'http://127.0.0.1:8765/text.png' });
+    await expect(page.locator('#content')).toHaveText('QRCS 中文测试\n第二行：你好，世界！');
+    await page.locator('#content').click({ button: 'right' });
+    assert.equal(page.isClosed(), false); await expect(page.locator('#result')).toBeVisible();
+    await Promise.all([page.waitForEvent('close'), page.locator('#cancel').click()]);
+  });
+  await check('非图片右键菜单进入框选兜底，可右键取消', async () => {
+    await source.bringToFront();
+    await worker.evaluate(async ({ tab, screenshot }) => {
+      const capture = chrome.tabs.captureVisibleTab;
+      chrome.tabs.captureVisibleTab = async () => screenshot;
+      try { await qrcsTest.handleContextMenu({ menuItemId: 'qrcs-image' }, tab); }
+      finally { chrome.tabs.captureVisibleTab = capture; }
+    }, { tab, screenshot });
+    await expect(source.locator('qrcs-selection')).toBeVisible();
+    await source.mouse.click(500, 500, { button: 'right' });
+    await expect(source.locator('qrcs-selection')).toHaveCount(0); await expect(panel).toHaveCount(0);
+  });
   const styledURL = 'https://example.com/?qrcs=styled-gradient-logo';
   await check('美化二维码经不可见页面解码，显示页内小浮层', async () => {
     await source.goto('http://127.0.0.1:8765/styled.html'); await imageView('http://127.0.0.1:8765/styled.png');
@@ -170,7 +212,7 @@ try {
     await expect.poll(() => worker.evaluate(id => chrome.action.getPopup({ tabId: id }), tab.id)).toBe('');
   });
   await check('没有未捕获的页面错误', async () => { assert.deepEqual(errors, []); });
-  await fs.writeFile(path.join(root, 'docs/browser-test-results.json'), JSON.stringify({ testedAt: new Date().toISOString(), version: '1.0.2', browserVersion: context.browser().version(), passed, failed: 0,
+  await fs.writeFile(path.join(root, 'docs/browser-test-results.json'), JSON.stringify({ testedAt: new Date().toISOString(), version: manifest.version, browserVersion: context.browser().version(), passed, failed: 0,
     scope: '独立 Chromium。生产右键处理函数、不可见页面解码、真实页内框选/结果/复制/跳转、受限页工具栏配置与紧凑界面；无新增系统窗口。截图由测试浏览器提供，未覆盖真实 Edge 原生菜单/工具栏手势和 activeTab 截屏授权。' }, null, 2) + '\n');
   console.log(`集成测试通过：${passed}/${passed}`);
 } catch (error) {

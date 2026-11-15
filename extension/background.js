@@ -1,12 +1,14 @@
 import { safeWebURL, pixelRect } from './core.js';
+import { createMenuRegistrar } from './context-menu.js';
 
 const MENU = 'qrcs-image', PREFIX = 'qrcs-job-', MAX_AGE = 30 * 60 * 1000;
 const scanning = new Set();
 let creatingOffscreen;
-chrome.runtime.onInstalled.addListener(() => { void (async () => {
-  await chrome.contextMenus.removeAll();
-  chrome.contextMenus.create({ id: MENU, title: 'QR码识别', contexts: ['image'] });
-})(); });
+const registerMenu = createMenuRegistrar(chrome);
+const restoreMenu = () => { void registerMenu().catch(error => console.error('QRCS 图片菜单注册失败：', error)); };
+chrome.runtime.onInstalled.addListener(restoreMenu);
+chrome.runtime.onStartup.addListener(restoreMenu);
+restoreMenu();
 async function cleanJobs() {
   const all = await chrome.storage.session.get(null);
   for (const job of Object.values(all).filter(job => job?.id && Date.now() - job.created > MAX_AGE)) await dropJob(job);
@@ -109,7 +111,12 @@ export async function beginImage(info, tab) {
     : { mode: 'error', error: '无法读取这张图片，请点击插件图标进行截图框选。', screenshot }));
 }
 chrome.action.onClicked.addListener(tab => { void beginSelection(tab); });
-chrome.contextMenus.onClicked.addListener((info, tab) => { if (info.menuItemId === MENU && tab) void beginImage(info, tab); });
+export async function handleContextMenu(info, tab) {
+  if (info.menuItemId !== MENU || !tab) return;
+  if (info.mediaType === 'image' && info.srcUrl) await beginImage(info, tab);
+  else await beginSelection(tab);
+}
+chrome.contextMenus.onClicked.addListener((info, tab) => { void handleContextMenu(info, tab); });
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
   if (!message || message.target === 'qrcs-offscreen' || !message.type?.startsWith('QRCS_')) return;
   const internal = sender.id === chrome.runtime.id && sender.url?.startsWith(chrome.runtime.getURL('scanner.html'));

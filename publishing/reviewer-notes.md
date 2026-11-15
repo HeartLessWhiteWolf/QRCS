@@ -7,7 +7,7 @@ Test data: `privacy-site/demo.html` in the release-materials bundle is a self-co
 Suggested test flow:
 1. Open an ordinary HTTPS page containing a QR image. Right-click the image and choose “QR码识别”. A compact in-page result panel should appear.
 2. A URL sample should display `https://example.com/`. “复制” copies the text; “跳转” opens it in a new tab only after the user clicks. “取消”, the close button, or Esc dismisses the result.
-3. Click the QRCS toolbar icon, drag around a complete QR Code and its quiet zone, then release. A result is displayed in the same page. Esc cancels selection.
+3. Click the QRCS toolbar icon, drag around a complete QR Code and its quiet zone, then release. A result is displayed in the same page. Esc or a right-click cancels selection, including during a drag.
 4. A text QR should preserve the original Chinese text/newline and disable the web-navigation button.
 5. If multiple distinct codes are found, use the result buttons to switch between them.
 6. On pages where script injection is blocked (for example, a standalone data:image page), the extension uses a compact toolbar popup instead. If automatic popup opening is unavailable, click the QR badge on the extension icon. No standalone OS window is created for results.
@@ -32,5 +32,5 @@ Third-party source and licenses: jsQR 1.4.0 (Apache-2.0), zxing-wasm 3.1.6 JS wr
 
 - 将第一段中的 demo URL 换成实际可访问的地址，或删去没有部署的 URL 说明并提供审核可用的二维码页面。
 - 当前已有 17 项核心与 16 项独立 Chromium 集成测试；这不等同于当前 Edge 原生菜单/工具栏外壳已经全部实测。
-- 提交前请按以上步骤在正式 Microsoft Edge 中完成最后一次验收，确保运行版本是 1.0.2。
+- 提交前请按以上步骤在正式 Microsoft Edge 中完成最后一次验收，确保运行版本是 1.0.3。
 - 发布者邮箱、隐私政策 URL、商店说明和数据声明必须保持一致，不填虚构信息。

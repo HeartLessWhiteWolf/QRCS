@@ -11,11 +11,11 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Microsoft_Edge-127%2B-087e81?style=flat-square" alt="Microsoft Edge，Chromium 127 及更新内核">
   <img src="https://img.shields.io/badge/Manifest-V3-476b78?style=flat-square" alt="Manifest V3">
-  <a href="https://github.com/HeartLessWhiteWolf/QRCS/raw/refs/heads/main/dist/QRCS-1.0.2.zip"><img src="https://img.shields.io/badge/version-1.0.2-087e81?style=flat-square" alt="当前版本 1.0.2"></a>
+  <a href="https://github.com/HeartLessWhiteWolf/QRCS/releases/download/v1.0.3/QRCS-1.0.3.zip"><img src="https://img.shields.io/badge/version-1.0.3-087e81?style=flat-square" alt="当前版本 1.0.3"></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/HeartLessWhiteWolf/QRCS/raw/refs/heads/main/dist/QRCS-1.0.2.zip"><strong>下载扩展 ZIP</strong></a>
+  <a href="https://github.com/HeartLessWhiteWolf/QRCS/releases/download/v1.0.3/QRCS-1.0.3.zip"><strong>下载扩展 ZIP</strong></a>
   · <a href="#安装">安装指南</a>
   · <a href="#使用方式">使用方式</a>
   · <a href="https://github.com/HeartLessWhiteWolf/QRCS/issues">反馈问题</a>
@@ -37,7 +37,7 @@
 
 目前提供 ZIP 手动安装，无需 Node.js 或其他开发工具。
 
-1. **[下载 QRCS 1.0.2](https://github.com/HeartLessWhiteWolf/QRCS/raw/refs/heads/main/dist/QRCS-1.0.2.zip)**，解压到准备长期保留的文件夹。
+1. **[下载 QRCS 1.0.3](https://github.com/HeartLessWhiteWolf/QRCS/releases/download/v1.0.3/QRCS-1.0.3.zip)**，解压到准备长期保留的文件夹。
 2. 在 Microsoft Edge 地址栏打开 `edge://extensions/`，开启「开发人员模式」。
 3. 点击「加载解压缩的扩展」，选择解压后**直接包含 `manifest.json`** 的文件夹。
 4. 在扩展菜单中找到「QRCS 二维码识别」，将图标固定到工具栏即可开始使用。
@@ -63,9 +63,11 @@ git clone https://github.com/HeartLessWhiteWolf/QRCS.git
 
 有效的 HTTP / HTTPS 链接可以在新标签页打开；文本、Wi-Fi 配置和应用专用链接等保留原文供复制使用。识别完成后不会自动跳转。
 
+如果图片被网页遮罩覆盖，或二维码是画布、背景图，右键 **QR码识别** 会进入框选模式；也可直接点击工具栏图标框选。
+
 ### 截图框选
 
-点击工具栏图标 → 拖动框住完整二维码与四周留白 → 松开鼠标识别。按 `Esc` 可取消。
+点击工具栏图标 → 拖动框住完整二维码与四周留白 → 松开鼠标识别。按 `Esc` 或鼠标右键可取消框选。
 
 <table>
   <tr>
@@ -74,7 +76,7 @@ git clone https://github.com/HeartLessWhiteWolf/QRCS.git
   </tr>
   <tr>
     <td><a href="publishing/assets/screenshot-01-result-1280x800.png"><img src="publishing/assets/screenshot-01-result-1280x800.png" width="100%" alt="QRCS 在网页中显示链接内容、跳转、复制和取消按钮"></a></td>
-    <td><a href="publishing/assets/screenshot-02-selection-1280x800.png"><img src="publishing/assets/screenshot-02-selection-1280x800.png" width="100%" alt="QRCS 的页面遮罩、二维码选区和 Esc 取消提示"></a></td>
+    <td><a href="publishing/assets/screenshot-02-selection-1280x800.png"><img src="publishing/assets/screenshot-02-selection-1280x800.png" width="100%" alt="QRCS 的页面遮罩、二维码选区和 Esc / 右键取消提示"></a></td>
   </tr>
 </table>
 

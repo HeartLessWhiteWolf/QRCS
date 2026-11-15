@@ -16,7 +16,7 @@
       .box{display:none;position:absolute;border:2px solid #53dfd0;box-shadow:0 0 0 99999px #101b2c66;pointer-events:none}
       .tip{position:absolute;left:50%;top:24px;transform:translateX(-50%);padding:13px 20px;border-radius:12px;background:#12212f;box-shadow:0 5px 30px #0004;color:#fff;font:15px/1.5 'Microsoft YaHei',sans-serif;white-space:nowrap;pointer-events:none}
       button{position:absolute;right:24px;top:24px;background:white;color:#172c3b;border:0;border-radius:10px;padding:11px 20px;font:14px 'Microsoft YaHei',sans-serif;cursor:pointer}
-    </style><div class="screen" tabindex="0" role="dialog" aria-label="框选二维码，按 Esc 取消"><img alt="当前网页截图"><div class="shade"></div><div class="box"></div><div class="tip">拖动框住二维码 · 松开识别 · Esc 取消</div><button type="button">取消</button></div>`;
+    </style><div class="screen" tabindex="0" role="dialog" aria-label="框选二维码，按 Esc 或鼠标右键取消"><img alt="当前网页截图"><div class="shade"></div><div class="box"></div><div class="tip">拖动框住二维码 · 松开识别 · Esc / 右键取消</div><button type="button">取消</button></div>`;
     const screen = root.querySelector('.screen'), box = root.querySelector('.box'), shade = root.querySelector('.shade');
     root.querySelector('img').src = message.screenshot;
     const previousFocus = document.activeElement;
@@ -42,7 +42,7 @@
       if (event.key === 'Escape') { event.preventDefault(); cancel(); }
       if (event.key === 'Tab') event.preventDefault();
     });
-    screen.addEventListener('contextmenu', event => event.preventDefault());
+    screen.addEventListener('contextmenu', event => { event.preventDefault(); event.stopPropagation(); cancel(); });
     screen.addEventListener('pointerdown', event => {
       if (event.button !== 0 || event.target.tagName === 'BUTTON') return;
       event.preventDefault(); start = { x: event.clientX, y: event.clientY };
@@ -56,7 +56,7 @@
     });
     screen.addEventListener('pointercancel', () => { start = undefined; box.style.display = 'none'; shade.style.display = 'block'; });
     screen.addEventListener('pointerup', event => {
-      if (!start || finished) return;
+      if (event.button !== 0 || !start || finished) return;
       const w = innerWidth, h = innerHeight;
       const x = Math.max(0, Math.min(w, Math.min(start.x, event.clientX)));
       const y = Math.max(0, Math.min(h, Math.min(start.y, event.clientY)));

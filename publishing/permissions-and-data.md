@@ -1,6 +1,6 @@
 # 隐私页字段与权限理由
 
-适用版本：QRCS 1.0.2。以下内容可按 Partner Center 实际字段逐项粘贴。
+适用版本：QRCS 1.0.3。以下内容可按 Partner Center 实际字段逐项粘贴。
 
 ## Single Purpose / 单一用途
 

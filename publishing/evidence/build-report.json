@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-14T16:37:53.287Z",
-  "version": "1.0.2",
+  "generatedAt": "2026-11-15T10:20:36.619Z",
+  "version": "1.0.3",
   "images": [
     {
       "file": "assets/logo-128.png",
@@ -29,23 +29,23 @@
     },
     {
       "file": "assets/screenshot-01-result-1280x800.png",
-      "bytes": 84192,
-      "sha256": "baa48b0ecce9867e7979bff993f39a567165e33c13ae3593bfc2395b0093e372"
+      "bytes": 85206,
+      "sha256": "14524e0b9015aa5644d13fa0200b586c52e10136cbb66876e74d31508aea24f3"
     },
     {
       "file": "assets/screenshot-02-selection-1280x800.png",
-      "bytes": 72754,
-      "sha256": "bc632e1909cbab705162e1faeda420a342e0a033f6911bf0234d48dcd5fe08f3"
+      "bytes": 74320,
+      "sha256": "18b8eea74dff9b8666a06ae864e8b48515a9d1ec87a5ed510f7ecfda833525eb"
     },
     {
       "file": "assets/screenshot-03-text-1280x800.png",
-      "bytes": 85292,
-      "sha256": "57d6a4fa175304d14835bfde343baeaf09bab925ba5d69dbdf8208d594b0b3bf"
+      "bytes": 86308,
+      "sha256": "aa12d56d7dadb16307e83144acfb399de307810f90391b38925fa2d5f34baab8"
     },
     {
       "file": "assets/screenshot-04-wifi-1280x800.png",
-      "bytes": 84411,
-      "sha256": "e1e82f48738b58e4e3a8b4502a1c405704bc687fbd104854eed487e2aeb5faea"
+      "bytes": 85421,
+      "sha256": "717bcf6538ea44f07ba289f8e6a2f4758203c4c9f5c470b020b1ece18b8d40de"
     }
   ],
   "checks": [

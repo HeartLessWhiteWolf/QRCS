@@ -1,9 +1,9 @@
-# QRCS 1.0.2 商店发布材料
+# QRCS 1.0.3 商店发布材料
 
 发布者：**Xpovoc**  
 公开支持邮箱：**wighowolf@gmail.com**
 
-本目录是填写 Microsoft Partner Center 时使用的文案、图片和网页材料。**上传扩展包时，只选择 `upload/QRCS-1.0.2.zip`（材料 ZIP 解压后），或项目 `dist/QRCS-1.0.2.zip`。不要把整个发布材料 ZIP 当成扩展运行包上传。**
+本目录是填写 Microsoft Partner Center 时使用的文案、图片和网页材料。**上传扩展包时，只选择 `upload/QRCS-1.0.3.zip`（材料 ZIP 解压后），或项目 `dist/QRCS-1.0.3.zip`。不要把整个发布材料 ZIP 当成扩展运行包上传。**
 
 ## 当前状态
 
@@ -20,7 +20,7 @@
 
 | 页面 | 使用材料 |
 | --- | --- |
-| Packages | `upload/QRCS-1.0.2.zip` 或项目 `dist/QRCS-1.0.2.zip` |
+| Packages | `upload/QRCS-1.0.3.zip` 或项目 `dist/QRCS-1.0.3.zip` |
 | Availability | Public；如只希望分享链接可改 Hidden；选择计划发布的市场 |
 | Properties | 类别建议 Productivity；公开邮箱 `wighowolf@gmail.com` |
 | Privacy / Single Purpose | `permissions-and-data.md` 的单一用途 |
@@ -49,7 +49,7 @@
 
 建议同一站点包含：`index.html`（介绍）、`privacy.html`（政策）、`support.html`（帮助）、`demo.html`（自包含示例二维码）。这些页面不含统计脚本、外链字体或 Cookie 操作。
 
-这 4 个页面也单独打包在项目 `dist/QRCS-1.0.2-privacy-site.zip`，方便解压后上传。
+这 4 个页面也单独打包在项目 `dist/QRCS-1.0.3-privacy-site.zip`，方便解压后上传。
 
 上线后请在项目 `publishing/publisher.json` 中填写真实 `websiteURL`、`privacyPolicyURL`、`demoURL`，再执行下方验证。若从材料包直接发布，也可以手动将真实地址填入商店，不必为此修改扩展 manifest。
 

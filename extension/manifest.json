@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "QRCS 二维码识别",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "右键识别图片，或点击图标框选网页二维码。本地处理，先预览再跳转。",
   "minimum_chrome_version": "127",
   "permissions": ["contextMenus", "activeTab", "scripting", "storage", "offscreen"],

@@ -13,7 +13,7 @@ const request = async (type, extra = {}) => {
 function show(id) { for (const panel of ['loading', 'select', 'result', 'error']) $(panel).hidden = panel !== id; }
 function stopDecode() { pipeline?.cancel(); pipeline = null; }
 function showError(message) { stopDecode(); $('error-message').textContent = message; $('error-retry').hidden = !job?.screenshot; show('error'); }
-async function closeView() { operation++; stopDecode(); await request('QRCS_DROP_JOB').catch(() => {}); window.close(); }
+async function closeView() { drawStart = undefined; operation++; stopDecode(); await request('QRCS_DROP_JOB').catch(() => {}); window.close(); }
 async function decodeImage(image, rect) {
   const token = ++operation; stopDecode(); pipeline = new ImagePipeline(); show('loading');
   const results = await pipeline.decode(image, rect, text => { $('loading-detail').textContent = text; });
@@ -43,7 +43,7 @@ async function showSelection() {
   operation++; stopDecode(); drawStart = undefined; wholeScreenshotFallback = false;
   if (!job?.screenshot) { showError('没有可用截图，请回到网页重新点击插件图标。'); return; }
   $('selection-box').style.display = 'none'; $('screenshot').src = job.screenshot;
-  $('select-hint').textContent = '拖动框住二维码，松开识别。'; show('select'); $('stage').focus();
+  $('select-hint').textContent = '拖动框住二维码，松开识别；Esc 或鼠标右键取消。'; show('select'); $('stage').focus();
 }
 const stage = $('stage');
 const localPoint = event => {
@@ -61,12 +61,16 @@ stage.addEventListener('pointermove', event => {
 });
 stage.addEventListener('pointercancel', () => { drawStart = undefined; $('selection-box').style.display = 'none'; });
 stage.addEventListener('pointerup', event => {
-  if (!drawStart) return; const bounds = stage.getBoundingClientRect();
+  if (event.button !== 0 || !drawStart) return; const bounds = stage.getBoundingClientRect();
   const rect = selectionRect(drawStart, localPoint(event), bounds.width, bounds.height); drawStart = undefined;
   if (!rect) { $('selection-box').style.display = 'none'; $('select-hint').textContent = '选区太小，请重新拖动框住整个二维码。'; return; }
   void loadImage(job.screenshot).then(image => decodeImage(image, rect)).catch(error => showError(error.message));
 });
 window.addEventListener('resize', () => { drawStart = undefined; $('selection-box').style.display = 'none'; });
+document.addEventListener('contextmenu', event => {
+  if ($('select').hidden) return;
+  event.preventDefault(); event.stopPropagation(); void closeView();
+});
 document.addEventListener('keydown', event => { if (event.key === 'Escape') void closeView(); });
 for (const id of ['cancel', 'error-cancel', 'select-cancel']) $(id).onclick = closeView;
 for (const id of ['retry', 'error-retry']) $(id).onclick = showSelection;
