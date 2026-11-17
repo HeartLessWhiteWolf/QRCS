@@ -2,7 +2,7 @@
 export function createMenuRegistrar(api) {
   let pending;
   return () => pending ||= (async () => {
-    const properties = { title: 'QR码识别', contexts: ['image', 'page', 'frame', 'link', 'selection', 'video', 'audio'] };
+    const properties = { title: api.i18n.getMessage('menuScan'), contexts: ['image', 'page', 'frame', 'link', 'selection', 'video', 'audio'] };
     try { await api.contextMenus.update('qrcs-image', properties); }
     catch {
       await new Promise((resolve, reject) => {

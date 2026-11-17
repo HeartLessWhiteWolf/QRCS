@@ -1,8 +1,9 @@
 {
-  "testedAt": "2026-11-15T10:20:59.440Z",
+  "testedAt": "2026-11-16T10:15:38.591Z",
   "version": "1.0.3",
+  "language": "zh-CN",
   "browserVersion": "145.0.7632.6",
-  "passed": 22,
+  "passed": 24,
   "failed": 0,
   "scope": "独立 Chromium。生产右键处理函数、不可见页面解码、真实页内框选/结果/复制/跳转、受限页工具栏配置与紧凑界面；无新增系统窗口。截图由测试浏览器提供，未覆盖真实 Edge 原生菜单/工具栏手势和 activeTab 截屏授权。"
 }

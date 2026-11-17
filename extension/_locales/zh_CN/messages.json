@@ -1,0 +1,330 @@
+{
+  "uiLanguage": {
+    "message": "zh-CN"
+  },
+  "extensionName": {
+    "message": "QRCS 二维码识别"
+  },
+  "extensionDescription": {
+    "message": "右键识别图片，或点击图标框选网页二维码。本地处理，先预览再跳转。"
+  },
+  "actionTitle": {
+    "message": "框选二维码 · QRCS"
+  },
+  "menuScan": {
+    "message": "QR码识别"
+  },
+  "qrReader": {
+    "message": "二维码识别"
+  },
+  "localProcessing": {
+    "message": "本地处理"
+  },
+  "panelSubtitle": {
+    "message": "二维码识别 · 本地处理"
+  },
+  "offscreenTitle": {
+    "message": "QRCS 本地解码"
+  },
+  "offscreenJustification": {
+    "message": "在不可见的扩展页面中本地读取图像并运行二维码解码 Worker，结果显示在网页内。"
+  },
+  "menuRegistrationFailed": {
+    "message": "QRCS 图片菜单注册失败："
+  },
+  "cancel": {
+    "message": "取消"
+  },
+  "close": {
+    "message": "关闭"
+  },
+  "open": {
+    "message": "跳转"
+  },
+  "copy": {
+    "message": "复制"
+  },
+  "copyContent": {
+    "message": "复制内容"
+  },
+  "retrySelection": {
+    "message": "重新框选"
+  },
+  "retryScreenshot": {
+    "message": "重新框选截图"
+  },
+  "decoding": {
+    "message": "正在识别…"
+  },
+  "decodingTitle": {
+    "message": "正在识别二维码"
+  },
+  "loadingImage": {
+    "message": "读取图像并在本地解码…"
+  },
+  "pleaseWait": {
+    "message": "请稍候"
+  },
+  "selectTitle": {
+    "message": "框选二维码"
+  },
+  "selectionInstructions": {
+    "message": "拖动框住二维码，松开鼠标识别。请保留二维码四周留白，Esc 或鼠标右键取消。"
+  },
+  "selectionHint": {
+    "message": "拖动框住二维码，松开识别；Esc 或鼠标右键取消。"
+  },
+  "selectionDialog": {
+    "message": "框选二维码，按 Esc 或鼠标右键取消"
+  },
+  "selectionTip": {
+    "message": "拖动框住二维码 · 松开识别 · Esc / 右键取消"
+  },
+  "selectionTooSmall": {
+    "message": "选区太小，请把二维码连同四周留白一起框住"
+  },
+  "selectionRetrySmall": {
+    "message": "选区太小，请重新拖动框住整个二维码。"
+  },
+  "screenshotRegion": {
+    "message": "截图框选区域"
+  },
+  "currentScreenshot": {
+    "message": "当前网页截图"
+  },
+  "screenshotToRead": {
+    "message": "待识别的网页截图"
+  },
+  "success": {
+    "message": "识别成功"
+  },
+  "noCodeTitle": {
+    "message": "暂未识别到二维码"
+  },
+  "resultList": {
+    "message": "识别结果列表"
+  },
+  "qrContent": {
+    "message": "二维码内容"
+  },
+  "binaryData": {
+    "message": "二进制数据"
+  },
+  "binaryContent": {
+    "message": "（二进制数据）\n$bytes$",
+    "placeholders": {
+      "bytes": {
+        "content": "$1"
+      }
+    }
+  },
+  "kindWebLink": {
+    "message": "网页链接"
+  },
+  "kindWifi": {
+    "message": "Wi-Fi 信息"
+  },
+  "kindVcard": {
+    "message": "电子名片"
+  },
+  "kindEmail": {
+    "message": "电子邮件"
+  },
+  "kindPhone": {
+    "message": "电话号码"
+  },
+  "kindText": {
+    "message": "文本内容"
+  },
+  "webLinkHost": {
+    "message": "网页链接 · $host$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "openHost": {
+    "message": "在新标签页打开：$host$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "contentCopyable": {
+    "message": "此内容可复制使用。"
+  },
+  "resultNumber": {
+    "message": "结果 $number$",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "characterCount": {
+    "message": "$count$ 字符",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "multipleResults": {
+    "message": "找到 $count$ 个不同内容，请选择。",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "scannerMultipleResults": {
+    "message": "识别到 $count$ 个不同内容，请选择。",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "checkBeforeOpening": {
+    "message": "请核对内容后再打开。"
+  },
+  "scannerCheckBeforeOpening": {
+    "message": "请核对内容，再决定是否打开。"
+  },
+  "screenshotResults": {
+    "message": "以下为网页截图中的结果，请核对目标二维码。"
+  },
+  "scannerScreenshotResults": {
+    "message": "原图未能识别，以下是网页截图中找到的 $count$ 个不同内容，请核对目标二维码。",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "copied": {
+    "message": "已复制内容"
+  },
+  "copyManually": {
+    "message": "请选中内容后按 Ctrl+C 复制。"
+  },
+  "scannerCopyManually": {
+    "message": "请选中上方内容后按 Ctrl+C。"
+  },
+  "retryAdvice": {
+    "message": "可尝试放大页面后重新截图，并完整保留二维码四角。"
+  },
+  "privacyFooter": {
+    "message": "图像与识别内容不会上传 · 按 Esc 取消"
+  },
+  "errorInvalidSelection": {
+    "message": "选区无效，请重新框选。"
+  },
+  "errorInvalidJob": {
+    "message": "识别任务无效。"
+  },
+  "errorExpiredJob": {
+    "message": "识别任务已结束，请重新点击插件。"
+  },
+  "errorDecode": {
+    "message": "本地解码未能完成。"
+  },
+  "errorPanel": {
+    "message": "页面浮层不可用"
+  },
+  "errorTabChanged": {
+    "message": "标签页已切换，请在二维码所在标签页重新扫描。"
+  },
+  "errorSelectionUnavailable": {
+    "message": "页面框选不可用"
+  },
+  "errorCapture": {
+    "message": "无法截取当前页面：$details$",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorImageUnavailable": {
+    "message": "无法读取这张图片，请点击插件图标进行截图框选。"
+  },
+  "errorRequestSource": {
+    "message": "不允许的请求来源。"
+  },
+  "errorJobPage": {
+    "message": "页面与任务不匹配。"
+  },
+  "errorJobRead": {
+    "message": "仅扩展弹层可读取图像任务。"
+  },
+  "errorWebURL": {
+    "message": "仅支持打开有效的 HTTP / HTTPS 网页链接。"
+  },
+  "errorUnknownOperation": {
+    "message": "未知操作。"
+  },
+  "errorDisconnected": {
+    "message": "扩展连接已断开，请重新加载。"
+  },
+  "errorScannerDisconnected": {
+    "message": "扩展连接已断开，请重新打开。"
+  },
+  "errorNoScreenshot": {
+    "message": "没有可用截图，请回到网页重新点击插件图标。"
+  },
+  "errorEmptyImage": {
+    "message": "图片为空。"
+  },
+  "errorImageFormat": {
+    "message": "图片格式无法读取，请改用截图框选。"
+  },
+  "errorImageDenied": {
+    "message": "图片服务器拒绝读取（$status$）。",
+    "placeholders": {
+      "status": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorImageTooLarge": {
+    "message": "原图过大，请改用截图框选。"
+  },
+  "errorImageTimeout": {
+    "message": "原图读取超时，请改用截图框选。"
+  },
+  "errorCancelled": {
+    "message": "已取消识别。"
+  },
+  "errorDecodeTimeout": {
+    "message": "识别耗时较长，请缩小选区后重试。"
+  },
+  "errorWorkerStart": {
+    "message": "解码模块未能启动，请重新加载扩展。"
+  },
+  "errorNoCode": {
+    "message": "未找到可识别的二维码。请完整框住二维码，保留四周留白，并避开遮挡和模糊区域。"
+  },
+  "errorRetryScreenshot": {
+    "message": "$details$ 可重新框选截图。",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorDecoderRead": {
+    "message": "备用解码模块读取失败，请重新加载扩展。"
+  },
+  "progressResize": {
+    "message": "正在尝试调整图像尺寸…"
+  },
+  "progressDecode": {
+    "message": "正在本地解码，请稍候…"
+  },
+  "progressScreenshotFallback": {
+    "message": "原图未能识别，正在尝试网页截图…"
+  }
+}

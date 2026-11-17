@@ -8,6 +8,7 @@
     if (message.type !== 'QRCS_SELECT') return;
     closeCurrent?.();
     const host = document.createElement('qrcs-selection');
+    host.lang = chrome.i18n.getMessage('uiLanguage');
     host.style.cssText = 'all:initial!important;position:fixed!important;inset:0!important;z-index:2147483647!important;display:block!important;';
     const root = host.attachShadow({ mode: 'closed' });
     root.innerHTML = `<style>
@@ -16,7 +17,12 @@
       .box{display:none;position:absolute;border:2px solid #53dfd0;box-shadow:0 0 0 99999px #101b2c66;pointer-events:none}
       .tip{position:absolute;left:50%;top:24px;transform:translateX(-50%);padding:13px 20px;border-radius:12px;background:#12212f;box-shadow:0 5px 30px #0004;color:#fff;font:15px/1.5 'Microsoft YaHei',sans-serif;white-space:nowrap;pointer-events:none}
       button{position:absolute;right:24px;top:24px;background:white;color:#172c3b;border:0;border-radius:10px;padding:11px 20px;font:14px 'Microsoft YaHei',sans-serif;cursor:pointer}
-    </style><div class="screen" tabindex="0" role="dialog" aria-label="框选二维码，按 Esc 或鼠标右键取消"><img alt="当前网页截图"><div class="shade"></div><div class="box"></div><div class="tip">拖动框住二维码 · 松开识别 · Esc / 右键取消</div><button type="button">取消</button></div>`;
+      @media(max-width:700px){.tip{top:80px;max-width:calc(100vw - 32px);width:max-content;white-space:normal;text-align:center}}
+    </style><div class="screen" tabindex="0" role="dialog"><img><div class="shade"></div><div class="box"></div><div class="tip"></div><button type="button"></button></div>`;
+    root.querySelector('.screen').setAttribute('aria-label', chrome.i18n.getMessage('selectionDialog'));
+    root.querySelector('img').alt = chrome.i18n.getMessage('currentScreenshot');
+    root.querySelector('.tip').textContent = chrome.i18n.getMessage('selectionTip');
+    root.querySelector('button').textContent = chrome.i18n.getMessage('cancel');
     const screen = root.querySelector('.screen'), box = root.querySelector('.box'), shade = root.querySelector('.shade');
     root.querySelector('img').src = message.screenshot;
     const previousFocus = document.activeElement;
@@ -65,7 +71,7 @@
       start = undefined;
       if (width < 8 || height < 8) {
         box.style.display = 'none'; shade.style.display = 'block';
-        root.querySelector('.tip').textContent = '选区太小，请把二维码连同四周留白一起框住'; return;
+        root.querySelector('.tip').textContent = chrome.i18n.getMessage('selectionTooSmall'); return;
       }
       finished = true; cleanup();
       void send({ type: 'QRCS_CROP', rect: { x: x / w, y: y / h, width: width / w, height: height / h } });

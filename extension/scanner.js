@@ -1,13 +1,16 @@
+import { getMessage, localize } from './i18n.js';
 import { safeWebURL, selectionRect, resultKind } from './core.js';
 import { ImagePipeline, loadImage } from './image-pipeline.js';
 
+document.documentElement.lang = getMessage('uiLanguage');
+localize();
 const $ = id => document.getElementById(id), params = new URL(location.href).searchParams;
 document.documentElement.classList.toggle('compact', params.has('compact'));
 const jobId = params.get('job');
 let job, pipeline, selectedText = '', drawStart, operation = 0, wholeScreenshotFallback = false;
 const request = async (type, extra = {}) => {
   const reply = await chrome.runtime.sendMessage({ type, jobId, ...extra });
-  if (!reply?.ok) throw new Error(reply?.error || '扩展连接已断开，请重新打开。');
+  if (!reply?.ok) throw new Error(reply?.error || getMessage('errorScannerDisconnected'));
   return reply;
 };
 function show(id) { for (const panel of ['loading', 'select', 'result', 'error']) $(panel).hidden = panel !== id; }
@@ -21,29 +24,29 @@ async function decodeImage(image, rect) {
 }
 function showResults(results) {
   $('result-summary').textContent = wholeScreenshotFallback
-    ? `原图未能识别，以下是网页截图中找到的 ${results.length} 个不同内容，请核对目标二维码。`
-    : results.length === 1 ? '请核对内容，再决定是否打开。' : `识别到 ${results.length} 个不同内容，请选择。`;
+    ? getMessage('scannerScreenshotResults', String(results.length))
+    : results.length === 1 ? getMessage('scannerCheckBeforeOpening') : getMessage('scannerMultipleResults', String(results.length));
   const tabs = $('result-tabs'); tabs.replaceChildren();
   const choose = index => {
     selectedText = results[index].text;
-    $('content').textContent = selectedText || '（二进制数据）\n' + results[index].binary.map(x => x.toString(16).padStart(2, '0')).join(' ');
-    $('kind').textContent = selectedText ? resultKind(selectedText) : '二进制数据';
-    $('char-count').textContent = `${Array.from(selectedText).length} 字符`;
+    $('content').textContent = selectedText || getMessage('binaryContent', results[index].binary.map(x => x.toString(16).padStart(2, '0')).join(' '));
+    $('kind').textContent = selectedText ? resultKind(selectedText) : getMessage('binaryData');
+    $('char-count').textContent = getMessage('characterCount', String(Array.from(selectedText).length));
     const url = safeWebURL(selectedText); $('open').disabled = !url;
-    $('url-note').textContent = url ? '在新标签页打开：' + new URL(url).hostname : '此内容可复制使用。';
+    $('url-note').textContent = url ? getMessage('openHost', new URL(url).hostname) : getMessage('contentCopyable');
     $('feedback').textContent = ''; $('copy').disabled = !selectedText;
     [...tabs.children].forEach((tab, i) => tab.setAttribute('aria-pressed', String(i === index)));
   };
   if (results.length > 1) results.forEach((_result, index) => {
-    const button = document.createElement('button'); button.textContent = '结果 ' + (index + 1); button.onclick = () => choose(index); tabs.append(button);
+    const button = document.createElement('button'); button.textContent = getMessage('resultNumber', String(index + 1)); button.onclick = () => choose(index); tabs.append(button);
   });
   $('retry').hidden = !job.screenshot; choose(0); show('result');
 }
 async function showSelection() {
   operation++; stopDecode(); drawStart = undefined; wholeScreenshotFallback = false;
-  if (!job?.screenshot) { showError('没有可用截图，请回到网页重新点击插件图标。'); return; }
+  if (!job?.screenshot) { showError(getMessage('errorNoScreenshot')); return; }
   $('selection-box').style.display = 'none'; $('screenshot').src = job.screenshot;
-  $('select-hint').textContent = '拖动框住二维码，松开识别；Esc 或鼠标右键取消。'; show('select'); $('stage').focus();
+  $('select-hint').textContent = getMessage('selectionHint'); show('select'); $('stage').focus();
 }
 const stage = $('stage');
 const localPoint = event => {
@@ -63,7 +66,7 @@ stage.addEventListener('pointercancel', () => { drawStart = undefined; $('select
 stage.addEventListener('pointerup', event => {
   if (event.button !== 0 || !drawStart) return; const bounds = stage.getBoundingClientRect();
   const rect = selectionRect(drawStart, localPoint(event), bounds.width, bounds.height); drawStart = undefined;
-  if (!rect) { $('selection-box').style.display = 'none'; $('select-hint').textContent = '选区太小，请重新拖动框住整个二维码。'; return; }
+  if (!rect) { $('selection-box').style.display = 'none'; $('select-hint').textContent = getMessage('selectionRetrySmall'); return; }
   void loadImage(job.screenshot).then(image => decodeImage(image, rect)).catch(error => showError(error.message));
 });
 window.addEventListener('resize', () => { drawStart = undefined; $('selection-box').style.display = 'none'; });
@@ -80,8 +83,8 @@ $('open').onclick = async () => {
   catch (error) { $('feedback').textContent = error.message; $('open').disabled = false; }
 };
 $('copy').onclick = async () => {
-  try { await navigator.clipboard.writeText(selectedText); $('feedback').textContent = '已复制内容'; }
-  catch { $('feedback').textContent = '请选中上方内容后按 Ctrl+C。'; }
+  try { await navigator.clipboard.writeText(selectedText); $('feedback').textContent = getMessage('copied'); }
+  catch { $('feedback').textContent = getMessage('scannerCopyManually'); }
 };
 window.addEventListener('pagehide', () => { stopDecode(); void request('QRCS_DROP_JOB').catch(() => {}); });
 try {

@@ -6,6 +6,9 @@ import QRCode from 'qrcode';
 import { PNG } from 'pngjs';
 import { readBarcodes, prepareZXingModule } from 'zxing-wasm/reader';
 import { safeWebURL, resultKind, selectionRect, pixelRect } from '../extension/core.js';
+import { createI18n } from './helpers/i18n.mjs';
+
+globalThis.chrome = { i18n: createI18n('zh_CN') };
 
 test('只允许明确的 HTTP(S) 网址，并拒绝脚本、凭据和控制字符', () => {
   assert.equal(safeWebURL('https://example.com/a?q=中文'), 'https://example.com/a?q=%E4%B8%AD%E6%96%87');

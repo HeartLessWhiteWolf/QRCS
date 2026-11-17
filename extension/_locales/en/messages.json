@@ -1,0 +1,330 @@
+{
+  "uiLanguage": {
+    "message": "en"
+  },
+  "extensionName": {
+    "message": "QRCS QR Code Reader"
+  },
+  "extensionDescription": {
+    "message": "Read QR codes from images with a right-click, or select an area of a page. Decode locally and preview before opening links."
+  },
+  "actionTitle": {
+    "message": "Select a QR code · QRCS"
+  },
+  "menuScan": {
+    "message": "Read QR code"
+  },
+  "qrReader": {
+    "message": "QR code reader"
+  },
+  "localProcessing": {
+    "message": "Processed locally"
+  },
+  "panelSubtitle": {
+    "message": "QR code reader · Processed locally"
+  },
+  "offscreenTitle": {
+    "message": "QRCS local decoding"
+  },
+  "offscreenJustification": {
+    "message": "Read images locally and run a QR decoding Worker in an offscreen extension document, with results displayed on the page."
+  },
+  "menuRegistrationFailed": {
+    "message": "QRCS image menu registration failed:"
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "close": {
+    "message": "Close"
+  },
+  "open": {
+    "message": "Open link"
+  },
+  "copy": {
+    "message": "Copy"
+  },
+  "copyContent": {
+    "message": "Copy content"
+  },
+  "retrySelection": {
+    "message": "Select again"
+  },
+  "retryScreenshot": {
+    "message": "Select screenshot area again"
+  },
+  "decoding": {
+    "message": "Reading QR code…"
+  },
+  "decodingTitle": {
+    "message": "Reading QR code"
+  },
+  "loadingImage": {
+    "message": "Reading the image and decoding locally…"
+  },
+  "pleaseWait": {
+    "message": "Please wait"
+  },
+  "selectTitle": {
+    "message": "Select a QR code"
+  },
+  "selectionInstructions": {
+    "message": "Drag around the QR code and release to scan. Include the blank margin. Press Esc or right-click to cancel."
+  },
+  "selectionHint": {
+    "message": "Drag around the QR code and release to scan. Press Esc or right-click to cancel."
+  },
+  "selectionDialog": {
+    "message": "Select a QR code. Press Esc or right-click to cancel."
+  },
+  "selectionTip": {
+    "message": "Drag to select · Release to scan · Esc / right-click to cancel"
+  },
+  "selectionTooSmall": {
+    "message": "Selection too small. Include the entire QR code and its blank margin."
+  },
+  "selectionRetrySmall": {
+    "message": "Selection too small. Drag around the entire QR code again."
+  },
+  "screenshotRegion": {
+    "message": "Screenshot selection area"
+  },
+  "currentScreenshot": {
+    "message": "Current page screenshot"
+  },
+  "screenshotToRead": {
+    "message": "Page screenshot to scan"
+  },
+  "success": {
+    "message": "QR code read successfully"
+  },
+  "noCodeTitle": {
+    "message": "No QR code found"
+  },
+  "resultList": {
+    "message": "QR code results"
+  },
+  "qrContent": {
+    "message": "QR code content"
+  },
+  "binaryData": {
+    "message": "Binary data"
+  },
+  "binaryContent": {
+    "message": "(Binary data)\n$bytes$",
+    "placeholders": {
+      "bytes": {
+        "content": "$1"
+      }
+    }
+  },
+  "kindWebLink": {
+    "message": "Web link"
+  },
+  "kindWifi": {
+    "message": "Wi-Fi details"
+  },
+  "kindVcard": {
+    "message": "Contact card"
+  },
+  "kindEmail": {
+    "message": "Email"
+  },
+  "kindPhone": {
+    "message": "Phone number"
+  },
+  "kindText": {
+    "message": "Text"
+  },
+  "webLinkHost": {
+    "message": "Web link · $host$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "openHost": {
+    "message": "Open in a new tab: $host$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "contentCopyable": {
+    "message": "You can copy this content."
+  },
+  "resultNumber": {
+    "message": "Result $number$",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "characterCount": {
+    "message": "Characters: $count$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "multipleResults": {
+    "message": "Found $count$ distinct results. Choose one.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "scannerMultipleResults": {
+    "message": "Found $count$ distinct results. Choose one.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "checkBeforeOpening": {
+    "message": "Check the content before opening the link."
+  },
+  "scannerCheckBeforeOpening": {
+    "message": "Check the content before deciding whether to open the link."
+  },
+  "screenshotResults": {
+    "message": "These results are from the page screenshot. Check that they match your intended QR code."
+  },
+  "scannerScreenshotResults": {
+    "message": "Could not read the original image. Distinct results found in the page screenshot: $count$. Check that they match your intended QR code.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "copied": {
+    "message": "Content copied"
+  },
+  "copyManually": {
+    "message": "Select the content and press Ctrl+C to copy."
+  },
+  "scannerCopyManually": {
+    "message": "Select the content above and press Ctrl+C to copy."
+  },
+  "retryAdvice": {
+    "message": "Try zooming in and taking another screenshot. Include all four corners of the QR code."
+  },
+  "privacyFooter": {
+    "message": "Images and decoded content are not uploaded · Press Esc to cancel"
+  },
+  "errorInvalidSelection": {
+    "message": "Invalid selection. Select the QR code again."
+  },
+  "errorInvalidJob": {
+    "message": "Invalid scan task."
+  },
+  "errorExpiredJob": {
+    "message": "This scan task has ended. Click the extension icon again."
+  },
+  "errorDecode": {
+    "message": "Local decoding could not be completed."
+  },
+  "errorPanel": {
+    "message": "The in-page result panel is unavailable."
+  },
+  "errorTabChanged": {
+    "message": "The active tab changed. Scan again in the tab containing the QR code."
+  },
+  "errorSelectionUnavailable": {
+    "message": "Selection is unavailable on this page."
+  },
+  "errorCapture": {
+    "message": "Could not capture the current page: $details$",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorImageUnavailable": {
+    "message": "Could not read this image. Click the extension icon to select an area of the page screenshot."
+  },
+  "errorRequestSource": {
+    "message": "This request source is not allowed."
+  },
+  "errorJobPage": {
+    "message": "The page does not match this task."
+  },
+  "errorJobRead": {
+    "message": "Only the extension popup can read image tasks."
+  },
+  "errorWebURL": {
+    "message": "Only valid HTTP or HTTPS web links can be opened."
+  },
+  "errorUnknownOperation": {
+    "message": "Unknown operation."
+  },
+  "errorDisconnected": {
+    "message": "The extension connection was lost. Reload the extension."
+  },
+  "errorScannerDisconnected": {
+    "message": "The extension connection was lost. Open the extension again."
+  },
+  "errorNoScreenshot": {
+    "message": "No screenshot is available. Return to the page and click the extension icon again."
+  },
+  "errorEmptyImage": {
+    "message": "The image is empty."
+  },
+  "errorImageFormat": {
+    "message": "Could not read this image format. Select an area of the page screenshot instead."
+  },
+  "errorImageDenied": {
+    "message": "The image server rejected the request ($status$).",
+    "placeholders": {
+      "status": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorImageTooLarge": {
+    "message": "The original image is too large. Select an area of the page screenshot instead."
+  },
+  "errorImageTimeout": {
+    "message": "Reading the original image timed out. Select an area of the page screenshot instead."
+  },
+  "errorCancelled": {
+    "message": "Scan cancelled."
+  },
+  "errorDecodeTimeout": {
+    "message": "Scanning is taking too long. Select a smaller area and try again."
+  },
+  "errorWorkerStart": {
+    "message": "The decoder could not start. Reload the extension."
+  },
+  "errorNoCode": {
+    "message": "No readable QR code found. Select the entire code with its blank margin, avoiding obstructions and blurry areas."
+  },
+  "errorRetryScreenshot": {
+    "message": "$details$ You can select another area of the screenshot.",
+    "placeholders": {
+      "details": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorDecoderRead": {
+    "message": "Could not load the fallback decoder. Reload the extension."
+  },
+  "progressResize": {
+    "message": "Trying a different image size…"
+  },
+  "progressDecode": {
+    "message": "Decoding locally. Please wait…"
+  },
+  "progressScreenshotFallback": {
+    "message": "Could not read the original image. Trying the page screenshot…"
+  }
+}

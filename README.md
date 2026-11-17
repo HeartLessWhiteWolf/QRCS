@@ -123,3 +123,5 @@ QRCS 使用 Chromium 通用的 Manifest V3 扩展接口，面向桌面 Microsoft
 由 **Xpovoc** 维护 · [wighowolf@gmail.com](mailto:wighowolf@gmail.com)
 
 感谢 [jsQR](https://github.com/cozmo/jsQR) 和 [ZXing-C++ / zxing-wasm](https://github.com/Sec-ant/zxing-wasm) 提供解码能力。第三方许可证与来源见 [vendor 声明](extension/vendor/THIRD-PARTY-NOTICES.txt)。
+
+QRCS 自有代码采用 [MIT 许可证](LICENSE)，Copyright (c) 2026 HeartLessWhiteWolf。第三方组件继续适用各自的许可证。

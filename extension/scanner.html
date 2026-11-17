@@ -1,31 +1,31 @@
 <!doctype html>
-<html lang="zh-CN">
+<html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>QRCS 二维码识别</title>
+  <title data-i18n="extensionName"></title>
   <link rel="stylesheet" href="scanner.css">
   <script type="module" src="scanner.js"></script>
 </head>
 <body>
-  <header><img src="icons/48.png" width="38" height="38" alt=""><div><strong>QRCS</strong><span>二维码识别</span></div><small>本地处理</small></header>
+  <header><img src="icons/48.png" width="38" height="38" alt=""><div><strong>QRCS</strong><span data-i18n="qrReader"></span></div><small data-i18n="localProcessing"></small></header>
   <main>
-    <section id="loading" class="panel" aria-live="polite"><div class="spinner"></div><h1>正在识别二维码</h1><p id="loading-detail">读取图像并在本地解码…</p></section>
+    <section id="loading" class="panel" aria-live="polite"><div class="spinner"></div><h1 data-i18n="decodingTitle"></h1><p id="loading-detail" data-i18n="loadingImage"></p></section>
     <section id="select" hidden>
-      <div class="select-head"><div><h1>框选二维码</h1><p id="select-hint">拖动框住二维码，松开鼠标识别。请保留二维码四周留白，Esc 或鼠标右键取消。</p></div><button id="select-cancel" class="secondary">取消</button></div>
-      <div id="stage" tabindex="0" role="group" aria-label="截图框选区域"><img id="screenshot" alt="待识别的网页截图" draggable="false"><div id="selection-box"></div></div>
+      <div class="select-head"><div><h1 data-i18n="selectTitle"></h1><p id="select-hint" data-i18n="selectionInstructions"></p></div><button id="select-cancel" class="secondary" data-i18n="cancel"></button></div>
+      <div id="stage" tabindex="0" role="group" data-i18n-aria-label="screenshotRegion"><img id="screenshot" data-i18n-alt="screenshotToRead" draggable="false"><div id="selection-box"></div></div>
     </section>
     <section id="result" class="panel" hidden aria-live="polite">
-      <div class="status-icon">✓</div><h1>识别成功</h1><p id="result-summary"></p>
-      <div id="result-tabs" role="group" aria-label="识别结果列表"></div>
+      <div class="status-icon">✓</div><h1 data-i18n="success"></h1><p id="result-summary"></p>
+      <div id="result-tabs" role="group" data-i18n-aria-label="resultList"></div>
       <div class="content-head"><span id="kind"></span><span id="char-count"></span></div>
       <pre id="content" tabindex="0"></pre>
       <p id="url-note" class="note"></p>
-      <div class="actions"><button id="open" class="primary">跳转</button><button id="copy" class="secondary">复制内容</button><button id="cancel" class="quiet">取消</button></div>
-      <button id="retry" class="text-button">重新框选截图</button><p id="feedback" role="status"></p>
+      <div class="actions"><button id="open" class="primary" data-i18n="open"></button><button id="copy" class="secondary" data-i18n="copyContent"></button><button id="cancel" class="quiet" data-i18n="cancel"></button></div>
+      <button id="retry" class="text-button" data-i18n="retryScreenshot"></button><p id="feedback" role="status"></p>
     </section>
-    <section id="error" class="panel" hidden aria-live="polite"><div class="status-icon warning">!</div><h1>暂未识别到二维码</h1><p id="error-message"></p><div class="actions"><button id="error-retry" class="primary">重新框选</button><button id="error-cancel" class="secondary">取消</button></div><p class="note">可尝试放大页面后重新截图，并完整保留二维码四角。</p></section>
+    <section id="error" class="panel" hidden aria-live="polite"><div class="status-icon warning">!</div><h1 data-i18n="noCodeTitle"></h1><p id="error-message"></p><div class="actions"><button id="error-retry" class="primary" data-i18n="retrySelection"></button><button id="error-cancel" class="secondary" data-i18n="cancel"></button></div><p class="note" data-i18n="retryAdvice"></p></section>
   </main>
-  <footer>图像与识别内容不会上传 · 按 Esc 取消</footer>
+  <footer data-i18n="privacyFooter"></footer>
 </body>
 </html>

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
 import { PNG } from 'pngjs';
 import { unzipSync } from 'fflate';
+import { localizedManifest } from './localized-manifest.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'publishing');
 const publisher = JSON.parse(await fs.readFile(path.join(output, 'publisher.json'), 'utf8'));
@@ -14,7 +15,8 @@ const manifest = JSON.parse(await fs.readFile(path.join(root, 'extension/manifes
 const report = { checkedAt: new Date().toISOString(), version: manifest.version, checks: [], pending: [], readyForSubmission: false };
 const pass = text => { report.checks.push(text); console.log('PASS: ' + text); };
 assert.equal(publisher.extensionVersion, manifest.version);
-assert.equal(listing.name, manifest.name); assert.equal(listing.shortDescription, manifest.description);
+const localized = await localizedManifest(manifest, listing.language);
+assert.equal(listing.name, localized.name); assert.equal(listing.shortDescription, localized.description);
 assert.ok(Array.from(listing.description).length >= 250 && Array.from(listing.description).length <= 10000);
 assert.ok(listing.searchTerms.length <= 7 && listing.searchTerms.every(term => Array.from(term).length <= 30));
 assert.equal(listing.language, 'zh-CN');

@@ -35,6 +35,8 @@ npm run test:browser
 
 独立 Chromium 集成测试不等同于所有浏览器的原生交互验收。测试范围及限制见 [验收记录](TESTING.md)。
 
+集成测试默认使用简体中文。PowerShell 中可设置 `$env:QRCS_TEST_LANGUAGE = 'en-US'` 后重跑 `npm run test:browser` 验证英文，设置为 `zh-CN` 可切回中文。扩展文案维护在 `extension/_locales/zh_CN/messages.json` 与 `extension/_locales/en/messages.json`，两套消息键和占位符须保持一致；未支持的语言回退到英文。
+
 ## 本机示例页
 
 ```bash

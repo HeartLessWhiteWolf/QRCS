@@ -8,6 +8,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const language = process.env.QRCS_TEST_LANGUAGE || 'zh-CN';
 process.env.PLAYWRIGHT_BROWSERS_PATH ||= path.join(root, 'tmp/browsers');
 const { chromium, expect } = await import('@playwright/test');
 await fs.mkdir(path.join(root, 'tmp/fixtures'), { recursive: true });
@@ -39,11 +40,12 @@ try {
   manifest.background.service_worker = 'test-background.js';
   await fs.writeFile(path.join(testExtension, 'manifest.json'), JSON.stringify(manifest));
   await fs.writeFile(path.join(testExtension, 'test-background.js'), "import { beginImage, beginSelection, presentJob, handleContextMenu } from './background.js'; globalThis.qrcsTest = { beginImage, beginSelection, presentJob, handleContextMenu };\n");
-  context = await chromium.launchPersistentContext(profile, { channel: 'chromium', headless: true, viewport: { width: 1400, height: 1000 },
-    args: [`--disable-extensions-except=${testExtension}`, `--load-extension=${testExtension}`] });
+  context = await chromium.launchPersistentContext(profile, { channel: 'chromium', headless: true, locale: language, viewport: { width: 1400, height: 1000 },
+    args: [`--lang=${language}`, `--disable-extensions-except=${testExtension}`, `--load-extension=${testExtension}`] });
   context.on('page', page => page.on('pageerror', error => errors.push(error.message)));
   const worker = context.serviceWorkers()[0] || await context.waitForEvent('serviceworker');
   const extensionId = new URL(worker.url()).hostname;
+  const messages = await worker.evaluate(() => Object.fromEntries(['copied', 'selectionRetrySmall', 'noCodeTitle', 'screenshotResults', 'close'].map(key => [key, chrome.i18n.getMessage(key)])));
   const source = context.pages()[0] || await context.newPage();
   await source.goto('http://127.0.0.1:8765/index.html');
   const tab = await worker.evaluate(async () => (await chrome.tabs.query({ url: 'http://127.0.0.1:8765/index.html' }))[0]);
@@ -61,11 +63,32 @@ try {
     const job = await makeJob(extra, screenshot); const page = await context.newPage();
     await page.setViewportSize({ width: 420, height: 560 }); await page.goto(`chrome-extension://${extensionId}/scanner.html?job=${job.id}&compact=1`); return page;
   };
+  const catalog = JSON.parse(await fs.readFile(path.join(root, 'extension/_locales', language === 'zh-CN' ? 'zh_CN' : 'en', 'messages.json'), 'utf8'));
+  await check('实际浏览器语言、manifest 与工具栏界面文案一致', async () => {
+    assert.equal(await worker.evaluate(() => chrome.i18n.getUILanguage()), language);
+    assert.equal(await worker.evaluate(() => chrome.runtime.getManifest().name), catalog.extensionName.message);
+    assert.equal(await worker.evaluate(() => chrome.runtime.getManifest().description), catalog.extensionDescription.message);
+    const page = await standalone({ mode: 'error', error: catalog.errorCancelled.message });
+    await expect(page).toHaveTitle(catalog.extensionName.message);
+    await expect(page.locator('html')).toHaveAttribute('lang', catalog.uiLanguage.message);
+    await expect(page.locator('#error-message')).toHaveText(catalog.errorCancelled.message);
+    await expect(page.locator('#error-cancel')).toHaveText(catalog.cancel.message);
+    await expect(page.locator('#stage')).toHaveAttribute('aria-label', catalog.screenshotRegion.message);
+    await expect(page.locator('#screenshot')).toHaveAttribute('alt', catalog.screenshotToRead.message);
+    await page.locator('#error-cancel').click();
+  });
+  await check('不可见解码页的 HTTP 错误占位符使用当前语言', async () => {
+    await present({ mode: 'image', imageUrl: 'http://127.0.0.1:8765/missing.png' });
+    await expect(panel.locator('#summary')).toHaveText(catalog.errorImageDenied.message.replace('$status$', '404'));
+    await expect(panel.locator('#cancel')).toHaveText(catalog.cancel.message);
+    await expect(panel).toHaveAttribute('lang', catalog.uiLanguage.message);
+    await closePanel();
+  });
   await check('右键处理 → 页内小浮层，真实后台解码、复制与实际跳转', async () => {
     await imageView('http://127.0.0.1:8765/url.png');
     await expect(panel.locator('#content')).toHaveText('http://127.0.0.1:8765/destination.html?from=qrcs');
     await expect(panel.locator('#open')).toBeEnabled();
-    await panel.locator('#copy').click(); await expect(panel.locator('#feedback')).toHaveText('已复制内容');
+    await panel.locator('#copy').click(); await expect(panel.locator('#feedback')).toHaveText(messages.copied);
     const bounds = await panel.boundingBox(); assert.ok(bounds.width <= 420 && bounds.height < 450, JSON.stringify(bounds));
     await source.screenshot({ path: path.join(root, 'docs/screenshots/inpage-result.png') });
     const newTab = context.waitForEvent('page'); await panel.locator('#open').click(); const target = await newTab;
@@ -106,9 +129,10 @@ try {
   });
   await check('工具栏紧凑框选界面：小选区提示、反向拖动、缩放', async () => {
     const page = await standalone({ mode: 'select' }, screenshot);
-    await page.locator('#screenshot').evaluate(img => img.decode()); const bounds = await page.locator('#stage').boundingBox();
+    await page.locator('#screenshot').evaluate(img => img.decode()); let bounds = await page.locator('#stage').boundingBox();
     await page.mouse.move(bounds.x + 10, bounds.y + 10); await page.mouse.down(); await page.mouse.move(bounds.x + 12, bounds.y + 12); await page.mouse.up();
-    await expect(page.locator('#select-hint')).toContainText('选区太小');
+    await expect(page.locator('#select-hint')).toHaveText(messages.selectionRetrySmall);
+    bounds = await page.locator('#stage').boundingBox();
     const image = await source.locator('img').nth(1).boundingBox(), sx = bounds.width / 1400, sy = bounds.height / 1000;
     await page.mouse.move(bounds.x + (image.x + image.width) * sx, bounds.y + (image.y + image.height) * sy); await page.mouse.down();
     await page.mouse.move(bounds.x + image.x * sx, bounds.y + image.y * sy, { steps: 6 }); await page.mouse.up();
@@ -116,11 +140,11 @@ try {
   });
   await check('空白选区显示错误和重新框选入口', async () => {
     await present({ mode: 'crop', rect: { x: .8, y: .8, width: .15, height: .15 } }, screenshot);
-    await expect(panel.locator('#title')).toHaveText('暂未识别到二维码'); await expect(panel.locator('#retry')).toBeVisible(); await closePanel();
+    await expect(panel.locator('#title')).toHaveText(messages.noCodeTitle); await expect(panel.locator('#retry')).toBeVisible(); await closePanel();
   });
   await check('多二维码结果可切换，来源标明网页截图', async () => {
     await present({ mode: 'image', imageUrl: 'http://127.0.0.1:8765/missing.png' }, screenshot);
-    await expect(panel.locator('#summary')).toContainText('网页截图'); const texts = [];
+    await expect(panel.locator('#summary')).toHaveText(messages.screenshotResults); const texts = [];
     for (const button of await panel.locator('#tabs button').all()) { await button.click(); texts.push(await panel.locator('#content').textContent()); }
     for (const expected of ['QRCS 中文测试\n第二行：你好，世界！', 'http://127.0.0.1:8765/destination.html?from=qrcs', 'https://example.com/inverted', '<img src=x onerror=alert(1)>']) assert.ok(texts.includes(expected), JSON.stringify(texts));
     await closePanel();
@@ -194,7 +218,7 @@ try {
   await check('窄页面浮层不超出视口，关闭按钮可用', async () => {
     await source.setViewportSize({ width: 360, height: 640 }); await imageView('http://127.0.0.1:8765/text.png');
     const bounds = await panel.boundingBox(); assert.ok(bounds.x >= 0 && bounds.x + bounds.width <= 360 && bounds.width <= 332);
-    await panel.getByRole('button', { name: '关闭', exact: true }).click(); await expect(panel).toHaveCount(0); await source.setViewportSize({ width: 1400, height: 1000 });
+    await panel.getByRole('button', { name: messages.close, exact: true }).click(); await expect(panel).toHaveCount(0); await source.setViewportSize({ width: 1400, height: 1000 });
   });
   await check('识别结果从未新增系统窗口或结果标签页', async () => {
     assert.deepEqual(await windows(), initialWindows);
@@ -212,7 +236,7 @@ try {
     await expect.poll(() => worker.evaluate(id => chrome.action.getPopup({ tabId: id }), tab.id)).toBe('');
   });
   await check('没有未捕获的页面错误', async () => { assert.deepEqual(errors, []); });
-  await fs.writeFile(path.join(root, 'docs/browser-test-results.json'), JSON.stringify({ testedAt: new Date().toISOString(), version: manifest.version, browserVersion: context.browser().version(), passed, failed: 0,
+  await fs.writeFile(path.join(root, 'docs/browser-test-results.json'), JSON.stringify({ testedAt: new Date().toISOString(), version: manifest.version, language, browserVersion: context.browser().version(), passed, failed: 0,
     scope: '独立 Chromium。生产右键处理函数、不可见页面解码、真实页内框选/结果/复制/跳转、受限页工具栏配置与紧凑界面；无新增系统窗口。截图由测试浏览器提供，未覆盖真实 Edge 原生菜单/工具栏手势和 activeTab 截屏授权。' }, null, 2) + '\n');
   console.log(`集成测试通过：${passed}/${passed}`);
 } catch (error) {

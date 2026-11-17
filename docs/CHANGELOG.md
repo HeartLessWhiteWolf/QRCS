@@ -1,5 +1,11 @@
 # 更新记录
 
+## 1.0.4 · 2026-11-17
+
+- 新增 `_locales`（`en`、`zh_CN`）与 `chrome.i18n` 本地化，manifest、右键菜单、界面按钮、提示和错误信息全部走语言包；`default_locale` 为 `en`。
+- 仓库根目录补充 MIT `LICENSE`；`vendor/` 下 jsQR、ZXing-C++、zxing-wasm 的原有许可与声明保持不变。
+- 构建产物不再进入版本库（`dist/*.zip`、`dist/*.zip.sha256`、`tmp/`），仓库只保留源码与发布素材。
+
 ## 1.0.3 · 2026-11-15
 
 - 框选时支持鼠标右键取消，保留 Esc 和取消按钮；拖动途中取消不会触发识别。

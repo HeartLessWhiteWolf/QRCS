@@ -1,6 +1,6 @@
 {
   "name": "qrcs",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "description": "本地识别二维码的 Chromium / Edge 扩展",
   "type": "module",

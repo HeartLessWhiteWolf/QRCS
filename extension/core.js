@@ -1,4 +1,5 @@
-// Shared pure rules. Selection coordinates are fractions of the frozen image.
+import { getMessage } from './i18n.js';
+// Shared URL and geometry rules. Selection coordinates are fractions of the frozen image.
 export function safeWebURL(value) {
   if (typeof value !== 'string') return null;
   const text = value.trim();
@@ -21,17 +22,17 @@ export function selectionRect(a, b, width, height) {
 export function pixelRect(rect, width, height) {
   if (!rect || ![rect.x, rect.y, rect.width, rect.height].every(Number.isFinite)
       || rect.x < 0 || rect.y < 0 || rect.width <= 0 || rect.height <= 0
-      || rect.x + rect.width > 1.00001 || rect.y + rect.height > 1.00001) throw new Error('选区无效，请重新框选。');
+      || rect.x + rect.width > 1.00001 || rect.y + rect.height > 1.00001) throw new Error(getMessage('errorInvalidSelection'));
   const x = Math.max(0, Math.floor(rect.x * width)), y = Math.max(0, Math.floor(rect.y * height));
   return { x, y, width: Math.max(1, Math.min(width - x, Math.ceil((rect.x + rect.width) * width) - x)),
     height: Math.max(1, Math.min(height - y, Math.ceil((rect.y + rect.height) * height) - y)) };
 }
 
 export function resultKind(text) {
-  if (safeWebURL(text)) return '网页链接';
-  if (/^WIFI:/i.test(text)) return 'Wi-Fi 信息';
-  if (/^BEGIN:VCARD/i.test(text)) return '电子名片';
-  if (/^mailto:/i.test(text)) return '电子邮件';
-  if (/^tel:/i.test(text)) return '电话号码';
-  return '文本内容';
+  if (safeWebURL(text)) return getMessage('kindWebLink');
+  if (/^WIFI:/i.test(text)) return getMessage('kindWifi');
+  if (/^BEGIN:VCARD/i.test(text)) return getMessage('kindVcard');
+  if (/^mailto:/i.test(text)) return getMessage('kindEmail');
+  if (/^tel:/i.test(text)) return getMessage('kindPhone');
+  return getMessage('kindText');
 }

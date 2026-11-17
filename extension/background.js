@@ -1,3 +1,4 @@
+import { getOffscreenMessages } from './i18n.js';
 import { safeWebURL, pixelRect } from './core.js';
 import { createMenuRegistrar } from './context-menu.js';
 
@@ -5,7 +6,7 @@ const MENU = 'qrcs-image', PREFIX = 'qrcs-job-', MAX_AGE = 30 * 60 * 1000;
 const scanning = new Set();
 let creatingOffscreen;
 const registerMenu = createMenuRegistrar(chrome);
-const restoreMenu = () => { void registerMenu().catch(error => console.error('QRCS 图片菜单注册失败：', error)); };
+const restoreMenu = () => { void registerMenu().catch(error => console.error(chrome.i18n.getMessage('menuRegistrationFailed'), error)); };
 chrome.runtime.onInstalled.addListener(restoreMenu);
 chrome.runtime.onStartup.addListener(restoreMenu);
 restoreMenu();
@@ -19,9 +20,9 @@ async function createJob(tab, extra) {
   await saveJob(job); return job;
 }
 async function getJob(id) {
-  if (typeof id !== 'string' || !/^[0-9a-f-]{36}$/.test(id)) throw new Error('识别任务无效。');
+  if (typeof id !== 'string' || !/^[0-9a-f-]{36}$/.test(id)) throw new Error(chrome.i18n.getMessage('errorInvalidJob'));
   const job = (await chrome.storage.session.get(PREFIX + id))[PREFIX + id];
-  if (!job || Date.now() - job.created > MAX_AGE) throw new Error('识别任务已结束，请重新点击插件。');
+  if (!job || Date.now() - job.created > MAX_AGE) throw new Error(chrome.i18n.getMessage('errorExpiredJob'));
   return job;
 }
 async function saveJob(job) { await chrome.storage.session.set({ [PREFIX + job.id]: job }); }
@@ -40,11 +41,11 @@ async function offscreenDecode(job) {
   const url = chrome.runtime.getURL('offscreen.html');
   const contexts = await chrome.runtime.getContexts({ contextTypes: ['OFFSCREEN_DOCUMENT'], documentUrls: [url] });
   if (!contexts.length) {
-    creatingOffscreen ||= chrome.offscreen.createDocument({ url: 'offscreen.html', reasons: ['WORKERS', 'BLOBS'], justification: '在不可见的扩展页面中本地读取图像并运行二维码解码 Worker，结果显示在网页内。' }).finally(() => { creatingOffscreen = null; });
+    creatingOffscreen ||= chrome.offscreen.createDocument({ url: 'offscreen.html', reasons: ['WORKERS', 'BLOBS'], justification: chrome.i18n.getMessage('offscreenJustification') }).finally(() => { creatingOffscreen = null; });
     await creatingOffscreen;
   }
-  const result = await chrome.runtime.sendMessage({ target: 'qrcs-offscreen', type: 'QRCS_DECODE_JOB', job });
-  if (!result?.ok) throw new Error(result?.error || '本地解码未能完成。');
+  const result = await chrome.runtime.sendMessage({ target: 'qrcs-offscreen', type: 'QRCS_DECODE_JOB', job, messages: getOffscreenMessages() });
+  if (!result?.ok) throw new Error(result?.error || chrome.i18n.getMessage('errorDecode'));
   return result;
 }
 async function clearUI(tabId) {
@@ -64,7 +65,7 @@ export async function presentJob(job) {
     await chrome.scripting.executeScript({ target: { tabId: job.tabId }, files: ['result-panel.js'] });
     job.presentation = 'panel'; await saveJob(job);
     const reply = await chrome.tabs.sendMessage(job.tabId, { type: 'QRCS_SHOW_RESULT', jobId: job.id, canRetry: Boolean(job.screenshot) });
-    if (!reply?.ok) throw new Error('页面浮层不可用');
+    if (!reply?.ok) throw new Error(chrome.i18n.getMessage('errorPanel'));
   } catch { await toolbarView(job); return; }
   try {
     const decoded = job.mode === 'error' ? { error: job.error } : await offscreenDecode(job);
@@ -82,7 +83,7 @@ export async function presentJob(job) {
 async function capture(tab) {
   const check = async () => {
     const [active] = await chrome.tabs.query({ active: true, windowId: tab.windowId });
-    if (active?.id !== tab.id) throw new Error('标签页已切换，请在二维码所在标签页重新扫描。');
+    if (active?.id !== tab.id) throw new Error(chrome.i18n.getMessage('errorTabChanged'));
   };
   await check(); const image = await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'png' }); await check(); return image;
 }
@@ -95,10 +96,10 @@ export async function beginSelection(tab) {
     try {
       await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['selection.js'] });
       const reply = await chrome.tabs.sendMessage(tab.id, { type: 'QRCS_SELECT', jobId: job.id, screenshot: job.screenshot });
-      if (!reply?.ok) throw new Error('页面框选不可用');
+      if (!reply?.ok) throw new Error(chrome.i18n.getMessage('errorSelectionUnavailable'));
     } catch { await toolbarView(job); }
   } catch (error) {
-    await presentJob(await createJob(tab, { mode: 'error', error: '无法截取当前页面：' + error.message }));
+    await presentJob(await createJob(tab, { mode: 'error', error: chrome.i18n.getMessage('errorCapture', error.message) }));
   } finally { scanning.delete(tab.id); }
 }
 export async function beginImage(info, tab) {
@@ -108,7 +109,7 @@ export async function beginImage(info, tab) {
   const imageUrl = info.srcUrl;
   const valid = typeof imageUrl === 'string' && /^(https?:|data:image\/|blob:)/i.test(imageUrl);
   await presentJob(await createJob(tab, valid ? { mode: 'image', imageUrl, screenshot }
-    : { mode: 'error', error: '无法读取这张图片，请点击插件图标进行截图框选。', screenshot }));
+    : { mode: 'error', error: chrome.i18n.getMessage('errorImageUnavailable'), screenshot }));
 }
 chrome.action.onClicked.addListener(tab => { void beginSelection(tab); });
 export async function handleContextMenu(info, tab) {
@@ -123,14 +124,14 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
   void (async () => {
     const job = await getJob(message.jobId);
     const ownPage = sender.id === chrome.runtime.id && sender.tab?.id === job.tabId && sender.frameId === 0;
-    if (!internal && !ownPage) throw new Error('不允许的请求来源。');
+    if (!internal && !ownPage) throw new Error(chrome.i18n.getMessage('errorRequestSource'));
     switch (message.type) {
       case 'QRCS_CROP':
-        if (!ownPage) throw new Error('页面与任务不匹配。');
+        if (!ownPage) throw new Error(chrome.i18n.getMessage('errorJobPage'));
         pixelRect(message.rect, 1000, 1000); job.mode = 'crop'; job.rect = message.rect;
         await saveJob(job); void presentJob(job); return { ok: true };
       case 'QRCS_GET_JOB':
-        if (!internal) throw new Error('仅扩展弹层可读取图像任务。');
+        if (!internal) throw new Error(chrome.i18n.getMessage('errorJobRead'));
         return { ok: true, job };
       case 'QRCS_CANCEL_OVERLAY':
       case 'QRCS_DROP_JOB': await dropJob(job); return { ok: true };
@@ -138,10 +139,10 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
         await dropJob(job); void beginSelection(await chrome.tabs.get(job.tabId)); return { ok: true };
       case 'QRCS_OPEN_URL': {
         const url = safeWebURL(message.url);
-        if (!url) throw new Error('仅支持打开有效的 HTTP / HTTPS 网页链接。');
+        if (!url) throw new Error(chrome.i18n.getMessage('errorWebURL'));
         await chrome.tabs.create({ url, windowId: job.windowId, active: true }); return { ok: true };
       }
-      default: throw new Error('未知操作。');
+      default: throw new Error(chrome.i18n.getMessage('errorUnknownOperation'));
     }
   })().then(respond, error => respond({ ok: false, error: error.message }));
   return true;

@@ -1,9 +1,12 @@
 node_modules/
-tmp/*
-!tmp/.gitkeep
+tmp/
 local-only/
 test-results/
 playwright-report/
+# Build output: every `npm run pack` / `store:pack` rewrites these, so committing
+# them only grows the repository. dist/README.md stays tracked as the directory note.
+dist/*.zip
+dist/*.zip.sha256
 .env
 .env.*
 !.env.example

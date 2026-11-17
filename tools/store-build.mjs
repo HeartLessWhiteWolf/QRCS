@@ -8,12 +8,14 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import QRCode from 'qrcode';
+import { localizedManifest } from './localized-manifest.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 process.env.PLAYWRIGHT_BROWSERS_PATH ||= path.join(root, 'tmp/browsers');
 const { chromium, expect } = await import('@playwright/test');
 const output = path.join(root, 'publishing');
 const publisher = JSON.parse(await fs.readFile(path.join(output, 'publisher.json'), 'utf8'));
 const manifest = JSON.parse(await fs.readFile(path.join(root, 'extension/manifest.json'), 'utf8'));
+const localized = await localizedManifest(manifest, publisher.storeLanguage);
 assert.equal(publisher.extensionVersion, manifest.version);
 for (const name of ['assets', 'privacy-site', 'evidence']) await fs.mkdir(path.join(output, name), { recursive: true });
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -77,8 +79,8 @@ try {
   const testManifest = { ...manifest, background: { ...manifest.background, service_worker: 'store-background.js' } };
   await fs.writeFile(path.join(extension, 'manifest.json'), JSON.stringify(testManifest));
   await fs.writeFile(path.join(extension, 'store-background.js'), "import { beginImage } from './background.js'; globalThis.qrcsStore = { beginImage };\n");
-  context = await chromium.launchPersistentContext(profile, { headless: true, channel: 'chromium', viewport: { width: 1280, height: 800 },
-    args: [`--disable-extensions-except=${extension}`, `--load-extension=${extension}`] });
+  context = await chromium.launchPersistentContext(profile, { headless: true, channel: 'chromium', locale: publisher.storeLanguage, viewport: { width: 1280, height: 800 },
+    args: [`--lang=${publisher.storeLanguage}`, `--disable-extensions-except=${extension}`, `--load-extension=${extension}`] });
   const worker = context.serviceWorkers()[0] || await context.waitForEvent('serviceworker');
   const source = context.pages()[0] || await context.newPage();
   await source.goto(base + '/demo');
@@ -150,7 +152,7 @@ await fs.writeFile(path.join(output, 'evidence/build-report.json'), JSON.stringi
 const listing = await fs.readFile(path.join(output, 'store-listing.zh-CN.md'), 'utf8');
 const description = listing.split('## 详细介绍（以下正文可直接粘贴）')[1].split('## 其他商店字段')[0].trim();
 await fs.writeFile(path.join(output, 'store-listing.json'), JSON.stringify({
-  name: manifest.name, shortDescription: manifest.description, description,
+  name: localized.name, shortDescription: localized.description, description,
   publisher: publisher.publisherName, supportEmail: publisher.supportEmail,
   category: publisher.suggestedCategory, language: publisher.storeLanguage,
   visibility: publisher.visibility, privacyPolicyURL: publisher.privacyPolicyURL,
