@@ -2,7 +2,7 @@
 
 QRCS is a single-purpose QR Code reader for desktop Microsoft Edge with Chromium 127 or later. No account, subscription, payment, backend recognition service, camera, microphone, or test credentials are required. The UI is Simplified Chinese.
 
-Test data: `privacy-site/demo.html` in the release-materials bundle is a self-contained page with generated sample QR images. Host this static file on an ordinary HTTPS page, or use the public demo URL recorded in publisher.json after it has actually been deployed. Please do not submit a local filesystem path as a public URL.
+Test data: a public, self-contained page with generated sample QR images is available at https://heartlesswhitewolf.github.io/qrcs-info/demo.html — no login, no script, no external assets. Privacy policy: https://heartlesswhitewolf.github.io/qrcs-info/privacy.html. Support page: https://heartlesswhitewolf.github.io/qrcs-info/support.html.
 
 Suggested test flow:
 1. Open an ordinary HTTPS page containing a QR image. Right-click the image and choose “QR码识别”. A compact in-page result panel should appear.
@@ -30,7 +30,7 @@ Third-party source and licenses: jsQR 1.4.0 (Apache-2.0), zxing-wasm 3.1.6 JS wr
 
 ## 提交前给发布者的提醒（不粘贴此节）
 
-- 将第一段中的 demo URL 换成实际可访问的地址，或删去没有部署的 URL 说明并提供审核可用的二维码页面。
-- 当前已有 17 项核心与 16 项独立 Chromium 集成测试；这不等同于当前 Edge 原生菜单/工具栏外壳已经全部实测。
-- 提交前请按以上步骤在正式 Microsoft Edge 中完成最后一次验收，确保运行版本是 1.0.3。
+- 示例页、隐私政策、帮助页已部署并验证可公开访问（GitHub Pages，见上方三个地址）。
+- 当前已有 25 项单元测试与 17 项独立 Chromium 集成测试；这不等同于当前 Edge 原生菜单/工具栏外壳已经全部实测。
+- 提交前请按以上步骤在正式 Microsoft Edge 中完成最后一次验收，确保运行版本是 1.0.5。
 - 发布者邮箱、隐私政策 URL、商店说明和数据声明必须保持一致，不填虚构信息。
