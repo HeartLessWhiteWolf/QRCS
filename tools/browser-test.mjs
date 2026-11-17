@@ -84,6 +84,29 @@ try {
     await expect(panel).toHaveAttribute('lang', catalog.uiLanguage.message);
     await closePanel();
   });
+
+  await check('后台未传语言消息时从本地语言包恢复并完成识别', async () => {
+    await worker.evaluate(() => {
+      globalThis.originalSendMessage = chrome.runtime.sendMessage;
+      chrome.runtime.sendMessage = (message, ...args) => {
+        if (message.type === 'QRCS_DECODE_JOB') { message = { ...message }; delete message.messages; }
+        return originalSendMessage(message, ...args);
+      };
+    });
+    try {
+      const dataURL = 'data:image/png;base64,' + (await fs.readFile(path.join(root, 'tmp/fixtures/url.png'))).toString('base64');
+      await context.setOffline(true);
+      await imageView(dataURL);
+      await expect(panel.locator('#content')).toHaveText('http://127.0.0.1:8765/destination.html?from=qrcs');
+      await closePanel();
+      await present({ mode: 'crop', rect: { x: 0, y: 0, width: 1, height: 1 } }, dataURL);
+      await expect(panel.locator('#content')).toHaveText('http://127.0.0.1:8765/destination.html?from=qrcs');
+      await closePanel();
+    } finally {
+      await context.setOffline(false);
+      await worker.evaluate(() => { chrome.runtime.sendMessage = originalSendMessage; delete globalThis.originalSendMessage; });
+    }
+  });
   await check('右键处理 → 页内小浮层，真实后台解码、复制与实际跳转', async () => {
     await imageView('http://127.0.0.1:8765/url.png');
     await expect(panel.locator('#content')).toHaveText('http://127.0.0.1:8765/destination.html?from=qrcs');

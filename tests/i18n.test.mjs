@@ -51,13 +51,59 @@ test('both locales translate menus, content kinds, errors and offscreen substitu
     assert.equal(title, i18n.getMessage('menuScan'));
     const messages = getOffscreenMessages();
     globalThis.chrome = { runtime: {} };
-    setOffscreenMessages(messages);
+    await setOffscreenMessages(messages);
     assert.equal(getMessage('errorImageDenied', '403'), i18n.getMessage('errorImageDenied', '403'));
     assert.equal(getMessage('errorRetryScreenshot', 'reason $1 <img>'), i18n.getMessage('errorRetryScreenshot', 'reason $1 <img>'));
     assert.equal(getMessage('progressDecode'), i18n.getMessage('progressDecode'));
     assert.equal(getMessage('offscreenTitle'), i18n.getMessage('offscreenTitle'));
   }
   delete globalThis.chrome;
+});
+
+test('offscreen recovers missing or partial messages from bundled catalogs in both languages', async () => {
+  const originalFetch = globalThis.fetch;
+  const originalNavigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  delete globalThis.chrome;
+  try {
+    for (const [language, locale] of [['zh-CN', 'zh_CN'], ['en-US', 'en'], ['fr-FR', 'en']]) {
+      Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { language } });
+      let fetched = 0;
+      globalThis.fetch = async url => {
+        assert.equal(url.href, new URL(`../extension/_locales/${locale}/messages.json`, import.meta.url).href);
+        fetched++;
+        return { ok: true, json: async () => catalogs[locale] };
+      };
+      await setOffscreenMessages(undefined);
+      const i18n = createI18n(locale);
+      assert.equal(getMessage('uiLanguage'), i18n.getMessage('uiLanguage'));
+      assert.equal(getMessage('offscreenTitle'), i18n.getMessage('offscreenTitle'));
+      assert.equal(getMessage('errorImageDenied', '403'), i18n.getMessage('errorImageDenied', '403'));
+      assert.equal(getMessage('errorRetryScreenshot', 'reason $1 <img>'), i18n.getMessage('errorRetryScreenshot', 'reason $1 <img>'));
+      await setOffscreenMessages({ progressDecode: 'Background translation', uiLanguage: '' });
+      assert.equal(getMessage('progressDecode'), 'Background translation');
+      assert.equal(getMessage('uiLanguage'), i18n.getMessage('uiLanguage'));
+      assert.equal(fetched, 2);
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalNavigator) Object.defineProperty(globalThis, 'navigator', originalNavigator);
+    else delete globalThis.navigator;
+  }
+});
+
+test('offscreen responds with initialization errors instead of abandoning the decode request', async () => {
+  const source = (await fs.readFile(new URL('../extension/offscreen.js', import.meta.url), 'utf8')).replace(/^import .*;\r?\n/gm, '');
+  let listener, response;
+  const sandbox = vm.createContext({
+    chrome: { runtime: { id: 'qrcs', onMessage: { addListener(value) { listener = value; } } } },
+    ImagePipeline: class {},
+    setOffscreenMessages: async () => { throw new Error('Bundled language load failed'); }
+  });
+  vm.runInContext(source, sandbox);
+  assert.equal(listener({ target: 'qrcs-offscreen', type: 'QRCS_DECODE_JOB', job: { id: 'test' } }, { id: 'qrcs' }, value => { response = value; }), true);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(response.ok, false);
+  assert.equal(response.error, 'Bundled language load failed');
 });
 
 test('DOM localization writes text and accessibility attributes without parsing translated HTML', () => {
