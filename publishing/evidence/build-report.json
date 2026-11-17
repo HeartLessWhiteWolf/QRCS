@@ -1,59 +1,92 @@
 {
-  "generatedAt": "2026-11-15T10:20:36.619Z",
-  "version": "1.0.3",
+  "generatedAt": "2026-11-17T20:01:54.543Z",
+  "version": "1.0.5",
+  "brandSource": {
+    "file": "branding/qrcs-logo.png",
+    "sha256": "4b7d2e992dd260a2a0230f7d5a7766483dcc36fc1bdc29fcd9211cc49af242b9"
+  },
   "images": [
     {
+      "file": "assets/en-US/promo-large-1400x560.png",
+      "bytes": 66121,
+      "sha256": "588346d12e6e072e3844f8dc504ed63c07652f222806f924169bc6f7e12940ef"
+    },
+    {
+      "file": "assets/en-US/promo-small-440x280.png",
+      "bytes": 16843,
+      "sha256": "38e9109073ab92524391138eeada63860be825a3205a78d49e83d2a1c86467ea"
+    },
+    {
+      "file": "assets/en-US/screenshot-01-result-1280x800.png",
+      "bytes": 82359,
+      "sha256": "f2603e618aae22cd5fea29a869b701c513be5728c66ab4e9da6487acbe87019b"
+    },
+    {
+      "file": "assets/en-US/screenshot-02-selection-1280x800.png",
+      "bytes": 67661,
+      "sha256": "a4de76af8ceb98d8a362a67c4e6df15322200eb21a31ed0ac801db50ba957567"
+    },
+    {
+      "file": "assets/en-US/screenshot-03-text-1280x800.png",
+      "bytes": 83493,
+      "sha256": "11b2bdf0edbbce5116186303fc661d46a7e45580421505096013ab704817c614"
+    },
+    {
+      "file": "assets/en-US/screenshot-04-wifi-1280x800.png",
+      "bytes": 82809,
+      "sha256": "c99866e683641754a99d13ef0f6d2d78db34c93d694fefd080a60b8d088f165e"
+    },
+    {
       "file": "assets/logo-128.png",
-      "bytes": 490,
-      "sha256": "7f67ca05cb7729a766cb0686963ccfa9e96da03c133d86565c590c277a6d7001"
+      "bytes": 9012,
+      "sha256": "d6ca9fe5ddf4413bc1a6f5195bb50aac14384aa12e627e85f9349211f33404e9"
     },
     {
       "file": "assets/logo-300.png",
-      "bytes": 1068,
-      "sha256": "98b46aa2f97a45fa75f8010cf814a3160d4ffd2f2a83866ededc69e488aed51c"
+      "bytes": 71900,
+      "sha256": "051bd1517605967edc4c16d1fca76253bb2bce9610a6cee4c7049e93954d2968"
     },
     {
       "file": "assets/logo.svg",
-      "bytes": 9997,
-      "sha256": "f0f36065711ab297d179b9753701043f13a666cf185c29ccd37ebfc91e7d5668"
+      "bytes": 96044,
+      "sha256": "039a5b0ff7f431b5e781f3b50c4c5c9e89fd5177938eed2778f9e127990f3ed2"
     },
     {
       "file": "assets/promo-large-1400x560.png",
-      "bytes": 60467,
-      "sha256": "e42ec21bee8e31275fe385ff6df7ff0de3de5011b5e105e2b75c5d2bd71e23dc"
+      "bytes": 62826,
+      "sha256": "8f7daec518806e1e89f17ce47d0262c3754d1d7de5230d692439dbd4a6261067"
     },
     {
       "file": "assets/promo-small-440x280.png",
-      "bytes": 15124,
-      "sha256": "3346f64d8d5e1e18af60d6ecf86e4f61ca14c3774715b8328a42a50f04295369"
+      "bytes": 16469,
+      "sha256": "c45873c9d8ff972fe1b136d437e2d5da2c3e952900a6251a154a13820b108935"
     },
     {
       "file": "assets/screenshot-01-result-1280x800.png",
-      "bytes": 85206,
-      "sha256": "14524e0b9015aa5644d13fa0200b586c52e10136cbb66876e74d31508aea24f3"
+      "bytes": 87301,
+      "sha256": "6412f3fa75cecb3365df4cd79d18ef8e7f3837e0188d05e3684eca29090041c6"
     },
     {
       "file": "assets/screenshot-02-selection-1280x800.png",
-      "bytes": 74320,
-      "sha256": "18b8eea74dff9b8666a06ae864e8b48515a9d1ec87a5ed510f7ecfda833525eb"
+      "bytes": 75958,
+      "sha256": "947071d8c649844a686665d0a07d8f1310504bff6b0339958de66dec5c59c9f2"
     },
     {
       "file": "assets/screenshot-03-text-1280x800.png",
-      "bytes": 86308,
-      "sha256": "aa12d56d7dadb16307e83144acfb399de307810f90391b38925fa2d5f34baab8"
+      "bytes": 88434,
+      "sha256": "579e69f6be11f905d5c21d9c9d7d328bb0ab6be498eb1a619290ca05dc21c7ea"
     },
     {
       "file": "assets/screenshot-04-wifi-1280x800.png",
-      "bytes": 85421,
-      "sha256": "717bcf6538ea44f07ba289f8e6a2f4758203c4c9f5c470b020b1ece18b8d40de"
+      "bytes": 87530,
+      "sha256": "f0ee9b9f5a2edfa085ea8e997e14d1e15ed085987d5edc14eac2086cd75520e1"
     }
   ],
   "checks": [
     "4 张商店截图来自实际生产浮层/框选；示例链接、中文换行、Wi-Fi 原文与预期一致。",
-    "隐私政策 HTML 在桌面与 390px 手机视口无水平溢出；无外部脚本、远程字体。"
+    "隐私政策 HTML 在桌面与 390px 手机视口无水平溢出；无外部脚本、远程字体。",
+    "英文版另含 4 张实际生产截图和 2 张促销磁贴，独立 en-US 目录，中文素材保留。"
   ],
   "browserVersion": "145.0.7632.6",
-  "pending": [
-    "隐私政策真实 HTTPS 网址"
-  ]
+  "pending": []
 }

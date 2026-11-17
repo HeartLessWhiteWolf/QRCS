@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-11-17T20:01:55.997Z",
+  "version": "1.0.5",
+  "language": "en-US",
+  "brandSource": {
+    "file": "branding/qrcs-logo.png",
+    "sha256": "4b7d2e992dd260a2a0230f7d5a7766483dcc36fc1bdc29fcd9211cc49af242b9"
+  },
+  "images": [
+    {
+      "file": "assets/en-US/screenshot-01-result-1280x800.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 82359,
+      "sha256": "f2603e618aae22cd5fea29a869b701c513be5728c66ab4e9da6487acbe87019b"
+    },
+    {
+      "file": "assets/en-US/screenshot-03-text-1280x800.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 83493,
+      "sha256": "11b2bdf0edbbce5116186303fc661d46a7e45580421505096013ab704817c614"
+    },
+    {
+      "file": "assets/en-US/screenshot-04-wifi-1280x800.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 82809,
+      "sha256": "c99866e683641754a99d13ef0f6d2d78db34c93d694fefd080a60b8d088f165e"
+    },
+    {
+      "file": "assets/en-US/screenshot-02-selection-1280x800.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 67661,
+      "sha256": "a4de76af8ceb98d8a362a67c4e6df15322200eb21a31ed0ac801db50ba957567"
+    },
+    {
+      "file": "assets/en-US/promo-small-440x280.png",
+      "width": 440,
+      "height": 280,
+      "bytes": 16843,
+      "sha256": "38e9109073ab92524391138eeada63860be825a3205a78d49e83d2a1c86467ea"
+    },
+    {
+      "file": "assets/en-US/promo-large-1400x560.png",
+      "width": 1400,
+      "height": 560,
+      "bytes": 66121,
+      "sha256": "588346d12e6e072e3844f8dc504ed63c07652f222806f924169bc6f7e12940ef"
+    }
+  ],
+  "checks": [
+    "English browser UI, result panel, selection overlay, page copy and decoded sample text verified; no Chinese text in visible UI.",
+    "Screenshots use actual production decoding and selection; non-web content disables Open link; selection completes decoding.",
+    "English promotional tiles use the actual English result-panel capture and the shared Chinese/English layout."
+  ],
+  "browserVersion": "145.0.7632.6"
+}

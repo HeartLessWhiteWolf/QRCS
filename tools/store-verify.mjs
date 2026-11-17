@@ -41,11 +41,31 @@ for (const [name, dimensions] of expected) {
 const allScreens = (await fs.readdir(path.join(output, 'assets'))).filter(name => name.startsWith('screenshot-'));
 assert.equal(allScreens.length, 4); assert.ok(allScreens.length <= 6);
 const build = JSON.parse(await fs.readFile(path.join(output, 'evidence/build-report.json'), 'utf8'));
+assert.equal(build.version, manifest.version, '商店图片的生成版本应与扩展一致');
+assert.equal(build.brandSource?.file, 'branding/qrcs-logo.png', '缺少统一徽标母版记录，请运行 npm run store:build');
+assert.equal(build.brandSource.sha256, crypto.createHash('sha256').update(await fs.readFile(path.join(root, build.brandSource.file))).digest('hex'), '徽标母版已变更，请运行 npm run store:build');
 for (const entry of build.images) {
   const bytes = await fs.readFile(path.join(output, entry.file));
   assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), entry.sha256, entry.file);
 }
-pass('4 张真实截图在商店数量上限内，全部图像与生成证据 SHA-256 一致');
+let englishBuild;
+try { englishBuild = JSON.parse(await fs.readFile(path.join(output, 'evidence/build-report-en.json'), 'utf8')); }
+catch (error) { if (error.code !== 'ENOENT') throw error; }
+if (englishBuild) {
+  assert.equal(englishBuild.version, manifest.version);
+  assert.equal(englishBuild.language, 'en-US');
+  assert.deepEqual(englishBuild.brandSource, build.brandSource);
+  const englishNames = new Map([...expected].filter(([name]) => !name.startsWith('logo-')));
+  assert.deepEqual(englishBuild.images.map(entry => entry.file).sort(), [...englishNames.keys()].map(name => 'assets/en-US/' + name).sort());
+  for (const entry of englishBuild.images) {
+    const bytes = await fs.readFile(path.join(output, entry.file)), png = PNG.sync.read(bytes);
+    assert.deepEqual([png.width, png.height], englishNames.get(path.basename(entry.file)), entry.file);
+    assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), entry.sha256, entry.file);
+  }
+  const englishScreens = (await fs.readdir(path.join(output, 'assets/en-US'))).filter(name => name.startsWith('screenshot-'));
+  assert.equal(englishScreens.length, 4); assert.ok(englishScreens.length <= 6);
+  pass('中英文各 4 张真实截图分别满足数量上限，英文另含 2 张促销磁贴，全部图像与生成证据 SHA-256 一致');
+} else pass('4 张真实截图在商店数量上限内，全部图像与生成证据 SHA-256 一致');
 const policy = await fs.readFile(path.join(output, 'privacy-policy.zh-CN.md'), 'utf8');
 assert.ok(policy.includes(publisher.publisherName) && policy.includes(publisher.supportEmail));
 assert.doesNotMatch(policy, /\{\{[^}]+\}\}|【待填写/);

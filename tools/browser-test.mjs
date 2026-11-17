@@ -59,9 +59,9 @@ try {
     await worker.evaluate(job => chrome.storage.session.set({ ['qrcs-job-' + job.id]: job }), job); return job;
   };
   const present = async (extra, screenshot) => { const job = await makeJob(extra, screenshot); await worker.evaluate(job => qrcsTest.presentJob(job), job); return job; };
-  const standalone = async (extra, screenshot) => {
+  const standalone = async (extra, screenshot, { width = 420, height = 560, compact = true } = {}) => {
     const job = await makeJob(extra, screenshot); const page = await context.newPage();
-    await page.setViewportSize({ width: 420, height: 560 }); await page.goto(`chrome-extension://${extensionId}/scanner.html?job=${job.id}&compact=1`); return page;
+    await page.setViewportSize({ width, height }); await page.goto(`chrome-extension://${extensionId}/scanner.html?job=${job.id}${compact ? '&compact=1' : ''}`); return page;
   };
   const catalog = JSON.parse(await fs.readFile(path.join(root, 'extension/_locales', language === 'zh-CN' ? 'zh_CN' : 'en', 'messages.json'), 'utf8'));
   await check('实际浏览器语言、manifest 与工具栏界面文案一致', async () => {
@@ -258,6 +258,28 @@ try {
     await page.locator('#cancel').click();
     await expect.poll(() => worker.evaluate(id => chrome.action.getPopup({ tabId: id }), tab.id)).toBe('');
   });
+  // Refresh legacy documentation filenames using current, genuine extension UI.
+  // All payloads are public fixtures; no screenshots of private user codes.
+  for (const [filename, extra, input, expected] of [
+    ['result-url.png', { mode: 'image', imageUrl: 'http://127.0.0.1:8765/url.png' }, undefined, 'http://127.0.0.1:8765/destination.html?from=qrcs'],
+    ['result-text.png', { mode: 'image', imageUrl: 'http://127.0.0.1:8765/text.png' }, undefined, 'QRCS 中文测试\n第二行：你好，世界！'],
+    ['multiple-results.png', { mode: 'image', imageUrl: 'http://127.0.0.1:8765/missing.png' }, screenshot, undefined],
+    ['styled-result.png', { mode: 'image', imageUrl: 'data:image/png;base64,' + styledFixture.toString('base64') }, undefined, styledURL]
+  ]) {
+    const page = await standalone(extra, input, { width: 600, height: 660, compact: false });
+    await expect(page.locator('#result')).toBeVisible();
+    if (expected) await expect(page.locator('#content')).toHaveText(expected);
+    else await expect(page.locator('#result-tabs button')).toHaveCount(4);
+    await page.screenshot({ path: path.join(root, 'docs/screenshots', filename) });
+    await Promise.all([page.waitForEvent('close'), page.locator('#cancel').click()]);
+  }
+  {
+    const page = await standalone({ mode: 'select' }, screenshot, { width: 900, height: 700, compact: false });
+    await expect(page.locator('#select')).toBeVisible();
+    await page.locator('#screenshot').evaluate(img => img.decode());
+    await page.screenshot({ path: path.join(root, 'docs/screenshots/selection-window.png') });
+    await Promise.all([page.waitForEvent('close'), page.keyboard.press('Escape')]);
+  }
   await check('没有未捕获的页面错误', async () => { assert.deepEqual(errors, []); });
   await fs.writeFile(path.join(root, 'docs/browser-test-results.json'), JSON.stringify({ testedAt: new Date().toISOString(), version: manifest.version, language, browserVersion: context.browser().version(), passed, failed: 0,
     scope: '独立 Chromium。生产右键处理函数、不可见页面解码、真实页内框选/结果/复制/跳转、受限页工具栏配置与紧凑界面；无新增系统窗口。截图由测试浏览器提供，未覆盖真实 Edge 原生菜单/工具栏手势和 activeTab 截屏授权。' }, null, 2) + '\n');

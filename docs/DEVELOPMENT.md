@@ -49,6 +49,8 @@ npm run fixtures
 
 ## 打包
 
+徽标母版位于 `branding/qrcs-logo.png`。修改后依次运行 `npm run brand:build`、`npm run fixture:public`、`npm run test:browser` 和 `npm run store:build`，同步扩展图标、含中心徽标的样本、文档截图、宣传图与静态网页。`npm run vendor` 不再生成或覆盖图标。所有图像都从同一母版派生；SVG 入口为自包含 PNG 封装，不是矢量重绘。
+
 发布前统一运行：
 
 ```bash
@@ -79,6 +81,8 @@ npm run verify:package
 生成 `dist/QRCS-<版本>.zip` 和 SHA-256 文件。ZIP 内直接包含 `manifest.json`；发布或手动安装时使用这份扩展包。
 
 商店文案与素材生成见 [发布材料说明](../publishing/README.md)：
+
+`npm run store:build:en` 单独生成四张英文截图和两张英文促销磁贴，保存在 `publishing/assets/en-US/`；使用当前扩展的真实英文界面，不覆盖中文素材。`store:build` 会生成两种语言并递归记录资源哈希。
 
 ```bash
 npm run store:build

@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "vendor": "node tools/vendor.mjs",
+    "brand:build": "node tools/brand-assets.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:browser": "node tools/browser-test.mjs",
     "fixtures": "node tools/fixtures.mjs",
@@ -15,6 +16,7 @@
     "check:versions": "node tools/check-versions.mjs",
     "prepublish:check": "node tools/prepublish-check.mjs",
     "store:build": "node tools/store-build.mjs",
+    "store:build:en": "node tools/store-assets-en.mjs",
     "store:verify": "node tools/store-verify.mjs",
     "store:pack": "node tools/store-pack.mjs"
   },

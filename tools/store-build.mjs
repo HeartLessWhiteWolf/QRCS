@@ -9,6 +9,9 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import QRCode from 'qrcode';
 import { localizedManifest } from './localized-manifest.mjs';
+import { buildBrandAssets } from './brand-assets.mjs';
+import { buildEnglishAssets } from './store-assets-en.mjs';
+import { promotionHTML } from './store-promos.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 process.env.PLAYWRIGHT_BROWSERS_PATH ||= path.join(root, 'tmp/browsers');
 const { chromium, expect } = await import('@playwright/test');
@@ -23,16 +26,8 @@ const text = {
   publisher: publisher.publisherName || '【待填写发布者名称】',
   email: publisher.supportEmail || '【待填写公开支持邮箱】'
 };
-const svg = (() => {
-  let cells = '';
-  for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) {
-    const finder = (a, b) => { const dx = x - a, dy = y - b; return dx >= 0 && dy >= 0 && dx < 9 && dy < 9 && (dx < 2 || dx > 6 || dy < 2 || dy > 6 || (dx >= 3 && dx <= 5 && dy >= 3 && dy <= 5)); };
-    if (finder(5, 5) || finder(18, 5) || finder(5, 18) || (x >= 19 && x < 23 && y >= 19 && y < 23) || (x >= 25 && x < 28 && y >= 22 && y < 28) || (x >= 18 && x < 22 && y >= 26 && y < 28)) cells += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
-  }
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="300" height="300"><rect width="32" height="32" fill="#0a7177"/><g fill="#f5fffd" shape-rendering="crispEdges">${cells}</g></svg>`;
-})();
-await fs.writeFile(path.join(output, 'assets/logo.svg'), svg);
-const logoData = 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64');
+const brand = await buildBrandAssets();
+const logoData = brand.logoData;
 const demoCodes = [
   ['url', '网页链接', 'https://example.com/', '识别后可点击“跳转”，在新标签页打开示例网站。'],
   ['text', '中文与换行', 'QRCS 文字示例\n你好，二维码！\n本地识别，先预览再跳转。', '非网址按原文显示，可复制；跳转按钮不可用。'],
@@ -64,7 +59,7 @@ await fs.writeFile(path.join(output, 'privacy-site/support.html'), shell('帮助
 const files = new Map();
 files.set('/demo', demoHTML);
 let server, context;
-const proof = { generatedAt: new Date().toISOString(), version: manifest.version, images: [], checks: [] };
+const proof = { generatedAt: new Date().toISOString(), version: manifest.version, brandSource: brand.source, images: [], checks: [] };
 try {
   server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://127.0.0.1');
@@ -119,17 +114,11 @@ try {
   await panel.locator('#cancel').click();
   proof.checks.push('4 张商店截图来自实际生产浮层/框选；示例链接、中文换行、Wi-Fi 原文与预期一致。');
   const render = await context.newPage();
-  for (const size of [128, 300]) {
-    await render.setViewportSize({ width: size, height: size });
-    await render.setContent(`<!doctype html><style>html,body{margin:0;width:100%;height:100%;overflow:hidden}svg{display:block;width:100%;height:100%}</style>${svg}`);
-    await render.screenshot({ path: path.join(output, `assets/logo-${size}.png`) });
-  }
   const cardData = 'data:image/png;base64,' + panelBytes.toString('base64');
   for (const [name, width, height] of [['small', 440, 280], ['large', 1400, 560]]) {
-    const large = name === 'large';
-    const html = `<!doctype html><meta charset="utf-8"><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:'Microsoft YaHei',sans-serif;color:#173d45}body{background:#f0f7f3;position:relative;padding:${large ? '54px 72px' : '26px 30px'}}.orb{position:absolute;width:${large ? 760 : 340}px;height:${large ? 760 : 340}px;right:${large ? -120 : -150}px;top:${large ? -135 : -100}px;border-radius:50%;background:#d9eee5}.brand{display:flex;gap:12px;align-items:center;position:relative}.brand img{width:${large ? 52 : 36}px;height:${large ? 52 : 36}px;border-radius:9px}.brand b{font-size:${large ? 29 : 20}px;letter-spacing:2px}h1{position:relative;font-size:${large ? 57 : 29}px;line-height:1.35;margin:${large ? '38px 0 20px' : '23px 0 12px'};letter-spacing:-1px}p{position:relative;font-size:${large ? 21 : 14}px;color:#517574;margin:0}.pill{position:relative;display:inline-block;margin-top:${large ? 25 : 17}px;margin-right:8px;padding:${large ? '8px 16px' : '5px 10px'};border:1px solid #b9d8ce;border-radius:30px;color:#217b70;font-size:${large ? 15 : 11}px;background:#ffffff77}.preview{position:absolute;right:86px;top:116px;width:420px;border-radius:14px;box-shadow:0 22px 65px #144c3e25}.badge{position:absolute;right:156px;bottom:79px;color:#537970;font-size:14px}</style><div class="orb"></div><div class="brand"><img src="${logoData}" alt=""><b>QRCS</b></div><h1>${large ? '二维码内容，<br>在网页里看清楚。' : '看到二维码<br>直接读出来'}</h1><p>右键图片 · 框选截图</p><span class="pill">本地识别</span><span class="pill">先预览再跳转</span>${large ? `<img class="preview" src="${cardData}" alt="QRCS 实际结果浮层"><div class="badge">紧凑浮层 · 复制 / 跳转 / 取消</div>` : ''}`;
+    const html = promotionHTML({ name, logoData, cardData, language: 'zh-CN' });
     await render.setViewportSize({ width, height }); await render.setContent(html); await render.locator('img').first().evaluate(img => img.decode());
-    if (large) await render.locator('.preview').evaluate(img => img.decode());
+    if (name === 'large') await render.locator('.preview').evaluate(img => img.decode());
     assert.equal(await render.evaluate(() => document.documentElement.scrollWidth), width);
     await render.screenshot({ path: path.join(output, `assets/promo-${name}-${width}x${height}.png`) });
   }
@@ -143,10 +132,19 @@ try {
   proof.checks.push('隐私政策 HTML 在桌面与 390px 手机视口无水平溢出；无外部脚本、远程字体。');
   proof.browserVersion = context.browser().version();
 } finally { await context?.close(); if (server) await new Promise(resolve => server.close(resolve)); }
-for (const filename of await fs.readdir(path.join(output, 'assets'))) {
-  const data = await fs.readFile(path.join(output, 'assets', filename));
-  proof.images.push({ file: 'assets/' + filename, bytes: data.length, sha256: crypto.createHash('sha256').update(data).digest('hex') });
+await buildEnglishAssets();
+proof.checks.push('英文版另含 4 张实际生产截图和 2 张促销磁贴，独立 en-US 目录，中文素材保留。');
+async function recordImages(directory, prefix) {
+  for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
+    const file = path.join(directory, entry.name), name = prefix + entry.name;
+    if (entry.isDirectory()) await recordImages(file, name + '/');
+    else {
+      const data = await fs.readFile(file);
+      proof.images.push({ file: name, bytes: data.length, sha256: crypto.createHash('sha256').update(data).digest('hex') });
+    }
+  }
 }
+await recordImages(path.join(output, 'assets'), 'assets/');
 proof.pending = ['发布者名称', '公开支持邮箱', '隐私政策真实 HTTPS 网址'].filter((_, i) => ![publisher.publisherName, publisher.supportEmail, publisher.privacyPolicyURL][i]);
 await fs.writeFile(path.join(output, 'evidence/build-report.json'), JSON.stringify(proof, null, 2) + '\n');
 const listing = await fs.readFile(path.join(output, 'store-listing.zh-CN.md'), 'utf8');
@@ -159,4 +157,4 @@ await fs.writeFile(path.join(output, 'store-listing.json'), JSON.stringify({
   websiteURL: publisher.websiteURL,
   searchTerms: ['二维码', 'QR Code', '二维码识别', '截图扫码', '图片扫码', '本地识别']
 }, null, 2) + '\n');
-console.log(`发布素材生成完成：4 张真实截图、2 个 PNG 图标、2 张宣传图；待填 ${proof.pending.length} 项。`);
+console.log(`发布素材生成完成：中英文各 4 张真实截图、各 2 张宣传图、2 个 PNG 图标；待填 ${proof.pending.length} 项。`);
