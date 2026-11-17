@@ -19,13 +19,24 @@ export async function setOffscreenMessages(messages) {
   const complete = offscreenKeys.every(key => typeof messages?.[key] === 'string' && messages[key]);
   if (complete) { offscreenMessages = messages; return; }
   const locale = /^zh(?:[-_]|$)/i.test(globalThis.navigator?.language || '') ? 'zh_CN' : 'en';
-  const response = await fetch(new URL(`_locales/${locale}/messages.json`, import.meta.url));
-  if (!response.ok) throw new Error('Unable to load bundled language messages');
-  const catalog = await response.json();
+  const failure = detail => new Error(`Language pack (${locale}): ${detail}. Reload or reinstall QRCS.`);
+  let response;
+  try { response = await fetch(new URL(`_locales/${locale}/messages.json`, import.meta.url)); }
+  catch { throw failure('the bundled file could not be read'); }
+  if (!response.ok) throw failure(`the bundled file could not be read (HTTP ${response.status ?? 'error'})`);
+  let catalog;
+  try { catalog = await response.json(); }
+  catch { throw failure('the bundled file is not valid JSON'); }
   offscreenMessages = Object.fromEntries(offscreenKeys.map(key => {
-    const template = catalog[key].message.replace(/\$([a-z][a-z0-9_]*)\$/gi,
-      (_, name) => catalog[key].placeholders[name.toLowerCase()].content);
-    return [key, typeof messages?.[key] === 'string' && messages[key] ? messages[key] : template];
+    if (typeof messages?.[key] === 'string' && messages[key]) return [key, messages[key]];
+    const entry = catalog?.[key];
+    if (typeof entry?.message !== 'string' || !entry.message.trim()) throw failure(`missing or invalid message "${key}"`);
+    const template = entry.message.replace(/\$([a-z][a-z0-9_]*)\$/gi, (_, name) => {
+      const content = entry.placeholders?.[name.toLowerCase()]?.content;
+      if (typeof content !== 'string') throw failure(`missing or invalid placeholder "${name}" in "${key}"`);
+      return content;
+    });
+    return [key, template];
   }));
 }
 

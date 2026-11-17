@@ -7,12 +7,15 @@ import crypto from 'node:crypto';
 import { PNG } from 'pngjs';
 import { unzipSync } from 'fflate';
 import { localizedManifest } from './localized-manifest.mjs';
+import { checkVersions } from './check-versions.mjs';
+import { checkPrivacyPage } from './privacy-check.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+await checkVersions(root);
 const output = path.join(root, 'publishing');
 const publisher = JSON.parse(await fs.readFile(path.join(output, 'publisher.json'), 'utf8'));
 const listing = JSON.parse(await fs.readFile(path.join(output, 'store-listing.json'), 'utf8'));
 const manifest = JSON.parse(await fs.readFile(path.join(root, 'extension/manifest.json'), 'utf8'));
-const report = { checkedAt: new Date().toISOString(), version: manifest.version, checks: [], pending: [], readyForSubmission: false };
+const report = { checkedAt: new Date().toISOString(), version: manifest.version, checks: [], errors: [], networkPending: [], manualPending: [], pending: [], readyForSubmission: false };
 const pass = text => { report.checks.push(text); console.log('PASS: ' + text); };
 assert.equal(publisher.extensionVersion, manifest.version);
 const localized = await localizedManifest(manifest, listing.language);
@@ -61,20 +64,22 @@ assert.ok(!Object.keys(shipped).some(name => /store-background|test-background|f
 const checksum = (await fs.readFile(packagePath + '.sha256', 'utf8')).split(' ')[0];
 assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), checksum);
 pass('独立扩展 ZIP 版本、入口与 SHA-256 正确，不含测试入口或商店个人资料');
-if (!publisher.privacyPolicyURL) report.pending.push('将 privacy-site/privacy.html 部署到真实公开 HTTPS 地址，并填写 privacyPolicyURL。');
+if (!publisher.privacyPolicyURL) report.errors.push('缺少 privacyPolicyURL：请填写真实公开 HTTPS 隐私页地址。');
 else {
   const url = new URL(publisher.privacyPolicyURL);
   assert.equal(url.protocol, 'https:');
   assert.ok(!/^(localhost|127\.|example\.|.*\.example$)/.test(url.hostname));
-  try {
-    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
-    const body = await response.text();
-    if (!response.ok || !body.includes('QRCS') || !body.includes(publisher.supportEmail) || /【待填写|\{\{/.test(body)) throw new Error('公开页面状态或正文不匹配');
-    pass('公开 HTTPS 隐私页可读取且包含真实 QRCS 联系信息');
-  } catch (error) { report.pending.push('公开隐私页尚未通过网络验证：' + error.message); }
+  const privacy = await checkPrivacyPage(url, publisher.supportEmail);
+  if (privacy.status === 'passed') pass(privacy.message);
+  else if (privacy.status === 'network-unverified') report.networkPending.push(privacy.message);
+  else report.errors.push(privacy.message);
 }
-report.pending.push('在正式 Microsoft Edge 中完成提交版本的原生菜单/工具栏最终验收，并核对 Partner Center 账号、市场和实际表单。');
-report.readyForSubmission = report.pending.length === 0;
+report.manualPending.push('在正式 Microsoft Edge 中完成提交版本的原生菜单/工具栏最终验收，并核对 Partner Center 账号、市场和实际表单。');
+report.pending = [...report.networkPending, ...report.manualPending];
+report.readyForSubmission = report.errors.length === 0 && report.pending.length === 0;
 await fs.writeFile(path.join(output, 'evidence/preflight.json'), JSON.stringify(report, null, 2) + '\n');
-console.log(`材料校验完成：${report.checks.length} 项通过；${report.pending.length} 项发布前待办。`);
-for (const pending of report.pending) console.log('PENDING: ' + pending);
+console.log(`材料校验完成：${report.checks.length} 项通过；${report.errors.length} 项错误；${report.networkPending.length} 项网络待验证；${report.manualPending.length} 项人工待办。`);
+for (const error of report.errors) console.error('FAIL: ' + error);
+for (const pending of report.networkPending) console.log('NETWORK_PENDING: ' + pending);
+for (const pending of report.manualPending) console.log('MANUAL_PENDING: ' + pending);
+process.exitCode = report.errors.length ? 1 : report.networkPending.length ? 2 : 0;

@@ -12,6 +12,8 @@
     "fixture:public": "node tools/public-fixture.mjs",
     "pack": "node tools/pack.mjs",
     "verify:package": "node tools/verify-package.mjs",
+    "check:versions": "node tools/check-versions.mjs",
+    "prepublish:check": "node tools/prepublish-check.mjs",
     "store:build": "node tools/store-build.mjs",
     "store:verify": "node tools/store-verify.mjs",
     "store:pack": "node tools/store-pack.mjs"

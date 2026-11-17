@@ -4,7 +4,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
 import { zipSync } from 'fflate';
+import { checkVersions } from './check-versions.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+await checkVersions(root);
 const manifest = JSON.parse(await fs.readFile(path.join(root, 'extension/manifest.json'), 'utf8'));
 const files = {};
 async function walk(dir, prefix = '') {

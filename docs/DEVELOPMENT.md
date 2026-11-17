@@ -49,6 +49,28 @@ npm run fixtures
 
 ## 打包
 
+发布前统一运行：
+
+```bash
+npm run prepublish:check
+```
+
+按顺序执行版本一致性检查、`npm test`、打包、安装包与源码逐字节校验、商店材料及线上隐私页验证，任一步失败立即停止。命令使用 Node 启动各阶段，兼容 Windows，不要求 shell 支持 `&&`。
+
+版本以 `extension/manifest.json.version` 为准，须同步 `package.json.version`、`package-lock.json.version`、锁文件根包版本和 `publishing/publisher.json.extensionVersion`。`npm run check:versions` 可单独检查；`npm run pack` 也会先检查，发现不一致时指出具体字段，不自动改写文件。
+
+退出码：`0` 表示自动检查通过，`1` 表示版本、测试、材料或线上页面本身有错误，`2` 表示网络不可达或响应读取中断，线上验证尚未完成，恢复网络后应重跑。可访问页面的 HTTP 错误、正文不匹配、残留占位符归为错误，不当作断网。网络分类及人工待办写入 `publishing/evidence/preflight.json`；材料断言失败时以该次进程报错为准，旧报告不代表本次通过。
+
+Edge 原生交互与 Partner Center 核对仍是人工待办，不阻止自动检查返回 `0`，也不会因此被标记为已验收；`readyForSubmission` 仍为 `false`。该命令不包含浏览器集成测试、不生成宣传素材，也不上传或发布扩展。涉及解码、界面或本地化的改动，仍应单独运行上面的中英文浏览器集成验证。
+
+完整终端输出可保存到本机忽略目录；例如 PowerShell：
+
+```powershell
+npm run prepublish:check 2>&1 | Tee-Object -FilePath tmp/prepublish-check.log
+```
+
+单独生成安装包时：
+
 ```bash
 npm run pack
 npm run verify:package

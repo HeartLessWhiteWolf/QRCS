@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-17T18:51:36.453Z",
+  "checkedAt": "2026-11-17T19:04:04.863Z",
   "version": "1.0.5",
   "checks": [
     "商店描述 983 字符、搜索词 6 个，名称与短描述和 manifest 一致",
@@ -16,6 +16,11 @@
     "4 个静态页面没有未替换占位符、执行脚本、远程字体或外链图像，隐私政策署名正确",
     "独立扩展 ZIP 版本、入口与 SHA-256 正确，不含测试入口或商店个人资料",
     "公开 HTTPS 隐私页可读取且包含真实 QRCS 联系信息"
+  ],
+  "errors": [],
+  "networkPending": [],
+  "manualPending": [
+    "在正式 Microsoft Edge 中完成提交版本的原生菜单/工具栏最终验收，并核对 Partner Center 账号、市场和实际表单。"
   ],
   "pending": [
     "在正式 Microsoft Edge 中完成提交版本的原生菜单/工具栏最终验收，并核对 Partner Center 账号、市场和实际表单。"

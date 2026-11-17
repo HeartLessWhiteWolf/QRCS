@@ -1,8 +1,8 @@
-# Edge 上架操作指南（1.0.4）
+# Edge 上架操作指南（1.0.5）
 
 按顺序做完这四步就能提交。前两步在本地，后两步在网页。
 
-- 提交用的安装包：`dist/QRCS-1.0.4.zip`（521 KB）
+- 提交用的安装包：`dist/QRCS-1.0.5.zip`（522 KB）
 - 隐私政策：https://heartlesswhitewolf.github.io/qrcs-info/privacy.html
 - 示例页（给审核用）：https://heartlesswhitewolf.github.io/qrcs-info/demo.html
 - 帮助页：https://heartlesswhitewolf.github.io/qrcs-info/support.html
@@ -30,7 +30,7 @@
 ```powershell
 $dst = "$env:TEMP\qrcs-acceptance"
 Remove-Item $dst -Recurse -Force -ErrorAction SilentlyContinue
-Expand-Archive 'D:\DSH_WorkFolder\QRCS\dist\QRCS-1.0.4.zip' -DestinationPath $dst
+Expand-Archive 'D:\DSH_WorkFolder\QRCS\dist\QRCS-1.0.5.zip' -DestinationPath $dst
 $dst
 ```
 
@@ -39,7 +39,7 @@ $dst
 1. 地址栏输入 `edge://extensions/`
 2. 打开左下角「开发人员模式」
 3. 点「加载解压缩的扩展」，选上一步输出的目录
-4. 确认卡片上显示的版本是 **1.0.4**，且没有报错提示
+4. 确认卡片上显示的版本是 **1.0.5**，且没有报错提示
 
 ### 2.3 逐项走一遍（这是微软要求的那一步）
 
@@ -68,8 +68,8 @@ $dst
 
 ### 3.1 包（Package）
 
-- 上传 `dist/QRCS-1.0.4.zip`
-- 上传后系统会解析 manifest，确认显示版本 **1.0.4**、名称 **QRCS 二维码识别**
+- 上传 `dist/QRCS-1.0.5.zip`
+- 上传后系统会解析 manifest，确认显示版本 **1.0.5**、名称 **QRCS 二维码识别**
 
 ### 3.2 商店一览（Store listing）
 

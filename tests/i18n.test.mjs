@@ -106,6 +106,63 @@ test('offscreen responds with initialization errors instead of abandoning the de
   assert.equal(response.error, 'Bundled language load failed');
 });
 
+for (const [label, responseFor, expected] of [
+  ['fetch rejection', () => { throw new TypeError('Failed to fetch'); }, /file could not be read/],
+  ['HTTP error', () => ({ ok: false, status: 404 }), /HTTP 404/],
+  ['invalid JSON', () => ({ ok: true, json: async () => { throw new SyntaxError('Unexpected token'); } }), /not valid JSON/],
+  ['missing key', catalog => { delete catalog.offscreenTitle; return { ok: true, json: async () => catalog }; }, /missing or invalid message "offscreenTitle"/],
+  ['invalid message', catalog => { catalog.offscreenTitle = { message: null }; return { ok: true, json: async () => catalog }; }, /missing or invalid message "offscreenTitle"/],
+  ['missing placeholder', catalog => { catalog.errorImageDenied.placeholders = {}; return { ok: true, json: async () => catalog }; }, /missing or invalid placeholder/]
+]) test(`offscreen reports a readable error without hanging: ${label}`, async t => {
+  const originalFetch = globalThis.fetch;
+  const originalNavigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  t.after(() => {
+    globalThis.fetch = originalFetch;
+    if (originalNavigator) Object.defineProperty(globalThis, 'navigator', originalNavigator);
+    else delete globalThis.navigator;
+  });
+  const source = (await fs.readFile(new URL('../extension/offscreen.js', import.meta.url), 'utf8')).replace(/^import .*;\r?\n/gm, '');
+  for (const [language, locale] of [['zh-CN', 'zh_CN'], ['en-US', 'en']]) {
+    Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { language } });
+    globalThis.fetch = async () => responseFor(structuredClone(catalogs[locale]));
+    let listener, respond, ran = false, cancelled = false;
+    const reply = new Promise(resolve => { respond = resolve; });
+    const sandbox = vm.createContext({
+      chrome: { runtime: { id: 'qrcs', onMessage: { addListener(value) { listener = value; } } } },
+      ImagePipeline: class { run() { ran = true; } cancel() { cancelled = true; } },
+      setOffscreenMessages
+    });
+    vm.runInContext(source, sandbox);
+    assert.equal(listener({ target: 'qrcs-offscreen', type: 'QRCS_DECODE_JOB', job: { id: 'test' } }, { id: 'qrcs' }, respond), true);
+    let timer;
+    const response = await Promise.race([
+      reply,
+      new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Decode request hung')), 1000); })
+    ]).finally(() => clearTimeout(timer));
+    assert.equal(response.ok, false);
+    assert.match(response.error, expected);
+    assert.ok(response.error.includes(`Language pack (${locale})`));
+    assert.ok(response.error.includes('Reload or reinstall QRCS'));
+    assert.equal(ran, false, 'Language failure must not start decoding');
+    await new Promise(resolve => setImmediate(resolve));
+    listener({ target: 'qrcs-offscreen', type: 'QRCS_STOP_DECODE', jobId: 'test' }, { id: 'qrcs' }, () => {});
+    assert.equal(cancelled, false, 'Failed pipelines must be removed');
+  }
+});
+
+test('valid background messages survive a missing corresponding bundled entry', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  const catalog = structuredClone(catalogs.en);
+  delete catalog.offscreenTitle;
+  globalThis.fetch = async () => ({ ok: true, json: async () => catalog });
+  await setOffscreenMessages({ offscreenTitle: 'Title supplied by background' });
+  const originalChrome = globalThis.chrome;
+  delete globalThis.chrome;
+  try { assert.equal(getMessage('offscreenTitle'), 'Title supplied by background'); }
+  finally { if (originalChrome) globalThis.chrome = originalChrome; }
+});
+
 test('DOM localization writes text and accessibility attributes without parsing translated HTML', () => {
   globalThis.chrome = { i18n: createI18n('en') };
   const text = { dataset: { i18n: 'cancel' } };
